@@ -2,18 +2,15 @@ package student;
 
 /**
  * Enum to represent the columns in the game data.
- * 
  * This is to make it easier to access the column names
  * from the CSV file, without knowing
  * the names of the specific columns anywhere else in the program.
- * 
  * Throughout your program, you will use GameData when parsing anything
  * that is associated with column names (filter) and sorting.
  */
 public enum GameData {
     /**
      * Enums matching CODE(cvsname) pattern.
-     * 
      * name and id are used for game uniqueness.
      */
     NAME("objectname"), ID("objectid"),
@@ -29,7 +26,6 @@ public enum GameData {
 
     /**
      * Constructor for the enum.
-     * 
      * @param columnName the name of the column in the CSV file.
      */
     GameData(String columnName) {
@@ -38,7 +34,6 @@ public enum GameData {
 
     /**
      * Getter for the column name.
-     * 
      * @return the name of the column in the CSV file.
      */
     public String getColumnName() {
@@ -47,7 +42,6 @@ public enum GameData {
 
     /**
      * Get the enum from the column name.
-     * 
      * @param columnName the name of the column in the CSV file.
      * @return the enum that matches the column name.
      */
@@ -62,10 +56,8 @@ public enum GameData {
 
     /**
      * Get the enum from the enum name.
-     * 
      * Can use the enum name or the column name. Useful for filters and sorts
      * as they can use both.
-     * 
      * @param name the name of the enum.
      * @return the enum that matches the name.
      */

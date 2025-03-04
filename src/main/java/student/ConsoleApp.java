@@ -10,7 +10,6 @@ import java.util.Random;
 
 /**
  * Primary application that makes use of the IGameList and IPlanner interfaces.
- * 
  * The console app is an interactive way to manage the BG Arena game list,
  * and for a client to build a list of games they want to play, and
  * save out that list. Most of the features are focused on
@@ -43,7 +42,6 @@ public class ConsoleApp {
 
     /**
      * Start the console application.
-     * 
      * Processes the main menu commands and redirects.
      */
     public void start() {
@@ -223,7 +221,6 @@ public class ConsoleApp {
                     String filename = remainder().trim();
                     if (filename.isEmpty()) {
                         filename = DEFAULT_FILENAME;
-                        break;
                     }
                     gameList.saveGame(filename);
                     break;
@@ -279,10 +276,8 @@ public class ConsoleApp {
 
     /** 
      * Gets input from the client.
-     * 
      * @param format the format string to print.
      * @param args   the arguments to the format string.
-     * 
      * @return the input from the client as a string, one line at a time.
      */
     private static String getInput(String format, Object... args) {
@@ -296,14 +291,10 @@ public class ConsoleApp {
         return IN.nextLine();
     }
 
-
     /** 
      * Prints output to the client.
-     * 
      * We could call printf directly, but this gives us one location in case
      * we want to change the output to a file or other location.
-     * 
-     * 
      * @param format the format string to print.
      * @param output the output to print (array to match the format).
      */
@@ -313,12 +304,10 @@ public class ConsoleApp {
 
     /**
      * Enum to help with console text.
-     * 
      * This enum uses a properties file (stored in resources), so that
      * we can easily change the text without changing the code. While not
      * fully setup, this is also a way to add localization to the application by
      * having different properties files for different languages.
-     * 
      * It is worth noting this is *one* way to do this. It is also
      * very common to have a class with a number of final static strings
      * that are used for the same purpose - the most important part
@@ -341,10 +330,8 @@ public class ConsoleApp {
 
         /**
          * Get the string representation of the enum.
-         * 
          * This ends up being the value in the properties file with the key
          * being paired to the enum name, lowercase.
-         * 
          * @return the string representation of the enum.
          */
         @Override
@@ -354,9 +341,7 @@ public class ConsoleApp {
 
         /**
          * Get the enum from a string.
-         * 
          * Has a null check in case the string is not found in the properties file.
-         * 
          * @param str the string to convert to an enum.
          * @return the enum value.
          */
@@ -386,7 +371,5 @@ public class ConsoleApp {
                 e.printStackTrace();
             }
         }
-
     }
-
 }

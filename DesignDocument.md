@@ -13,13 +13,232 @@ Place your class diagrams below. Make sure you check the file in the browser on 
 Provide a class diagram for the provided code as you read through it.  For the classes you are adding, you will create them as a separate diagram, so for now, you can just point towards the interfaces for the provided code diagram.
 
 
+```mermaid
+classDiagram
+direction BT
+class BGArenaPlanner {
+  - BGArenaPlanner() 
+  - String DEFAULT_COLLECTION
+  + main(String[]) void
+}
+class BoardGame {
+  + BoardGame(String, int, int, int, int, int, double, int, double, int) 
+  - String name
+  - int maxPlayTime
+  - int minPlayTime
+  - int minPlayers
+  - int maxPlayers
+  - int rank
+  - int id
+  - double averageRating
+  - double difficulty
+  - int yearPublished
+  + getDifficulty() double
+  + equals(Object) boolean
+  + getRank() int
+  + hashCode() int
+  + getId() int
+  + getMaxPlayers() int
+  + getName() String
+  + getMinPlayTime() int
+  + getYearPublished() int
+  + getRating() double
+  + getMaxPlayTime() int
+  + main(String[]) void
+  + getMinPlayers() int
+  + toString() String
+  + toStringWithInfo(GameData) String
+}
+class ConsoleApp {
+  + ConsoleApp(IGameList, IPlanner) 
+  - IGameList gameList
+  - String DEFAULT_FILENAME
+  - Random RND
+  - Scanner current
+  - Scanner IN
+  - IPlanner planner
+  - getInput(String, Object[]) String
+  - processFilter() void
+  - printOutput(String, Object[]) void
+  - printCurrentList() void
+  - printFilterStream(Stream~BoardGame~, GameData) void
+  - randomNumber() void
+  - processListCommands() void
+  - remainder() String
+  + start() void
+  - nextCommand() ConsoleText
+  - processHelp() void
+}
+class ConsoleText {
+<<enumeration>>
+  + ConsoleText() 
+  +  CMD_SORT_OPTION
+  +  HELP
+  +  PROMPT
+  +  FILTERED_CLEAR
+  +  CMD_QUESTION
+  +  CMD_LIST
+  +  CMD_CLEAR
+  +  GOODBYE
+  +  CMD_SORT_OPTION_DIRECTION_ASC
+  +  WELCOME
+  +  CMD_HELP
+  +  CMD_FILTER
+  +  CMD_OPTION_ALL
+  - Properties CTEXT
+  +  EASTER_EGG
+  +  CMD_ADD
+  +  CMD_SAVE
+  +  FILTER_HELP
+  +  LIST_HELP
+  +  NO_FILTER
+  +  CMD_EXIT
+  +  CMD_SHOW
+  +  INVALID
+  +  CMD_EASTER_EGG
+  +  CMD_REMOVE
+  +  NO_GAMES_LIST
+  +  INVALID_LIST
+  +  CMD_SORT_OPTION_DIRECTION_DESC
+  + fromString(String) ConsoleText
+  + toString() String
+  + values() ConsoleText[]
+  + valueOf(String) ConsoleText
+}
+class GameData {
+<<enumeration>>
+  - GameData(String) 
+  +  NAME
+  +  YEAR
+  +  MAX_TIME
+  - String columnName
+  +  MIN_TIME
+  +  DIFFICULTY
+  +  RANK
+  +  ID
+  +  MAX_PLAYERS
+  +  RATING
+  +  MIN_PLAYERS
+  + getColumnName() String
+  + fromString(String) GameData
+  + values() GameData[]
+  + valueOf(String) GameData
+  + fromColumnName(String) GameData
+}
+class GameList {
+  + GameList() 
+  - Set~BoardGame~ gameList
+  + addToList(String, Stream~BoardGame~) void
+  + getGameNames() List~String~
+  + count() int
+  + clear() void
+  + saveGame(String) void
+  + removeFromList(String) void
+}
+class GamesLoader {
+  - GamesLoader() 
+  - String DELIMITER
+  + loadGamesFile(String) Set~BoardGame~
+  - toBoardGame(String, Map~GameData, Integer~) BoardGame?
+  - processHeader(String) Map~GameData, Integer~
+}
+class IGameList {
+<<Interface>>
+  + String ADD_ALL
+  + saveGame(String) void
+  + getGameNames() List~String~
+  + clear() void
+  + addToList(String, Stream~BoardGame~) void
+  + count() int
+  + removeFromList(String) void
+}
+class IPlanner {
+<<Interface>>
+  + reset() void
+  + filter(String) Stream~BoardGame~
+  + filter(String, GameData) Stream~BoardGame~
+  + filter(String, GameData, boolean) Stream~BoardGame~
+}
+class Operations {
+<<enumeration>>
+  - Operations(String) 
+  +  LESS_THAN_EQUALS
+  +  GREATER_THAN
+  - String operator
+  +  LESS_THAN
+  +  GREATER_THAN_EQUALS
+  +  EQUALS
+  +  CONTAINS
+  +  NOT_EQUALS
+  + fromOperator(String) Operations
+  + valueOf(String) Operations
+  + getOperator() String
+  + getOperatorFromStr(String) Operations?
+  + values() Operations[]
+}
+class Planner {
+  + Planner(Set~BoardGame~) 
+  + filter(String, GameData, boolean) Stream~BoardGame~
+  + reset() void
+  + filter(String, GameData) Stream~BoardGame~
+  + filter(String) Stream~BoardGame~
+}
+
+ConsoleApp  -->  ConsoleText 
+GameList  ..>  IGameList 
+Planner  ..>  IPlanner 
+```
 
 ### Your Plans/Design
 
 Create a class diagram for the classes you plan to create. This is your initial design, and it is okay if it changes. Your starting points are the interfaces. 
 
+```mermaid
+classDiagram
+direction BT
+class Filter {
+  - Filter(GameData, Operations, String) 
+  - Operations operation
+  - GameData column
+  - String value
+  + parseCondition(String) Filter
+  + apply(BoardGame) boolean
+  + getOperation() Operations
+  - parseFilterValue() Comparable?
+  + getColumn() GameData
+  - getGameValue(BoardGame) Comparable?
+  + getValue() String
+}
 
+class IPlanner {
+<<Interface>>
+  + filter(String) Stream~BoardGame~
+  + filter(String, GameData, boolean) Stream~BoardGame~
+  + filter(String, GameData) Stream~BoardGame~
+  + reset() void
+}
 
+class Planner {
+  + Planner(Set~BoardGame~) 
+  - Set~BoardGame~ allGames
+  - List~BoardGame~ filteredGames
+  + filter(String, GameData) Stream~BoardGame~
+  - applyFilter(List~BoardGame~, String) List~BoardGame~
+  - createComparator(GameData) Comparator~BoardGame~
+  + filter(String) Stream~BoardGame~
+  + reset() void
+  + filter(String, GameData, boolean) Stream~BoardGame~
+}
+
+class SortCriterion {
+  + SortCriterion() 
+  + sortGames(List~BoardGame~, GameData, boolean) void
+}
+
+Planner  ..>  IPlanner
+Planner  -->  Filter  
+Planner  -->  SortCriterion
+```
 
 
 ## (INITIAL DESIGN): Tests to Write - Brainstorm
@@ -36,8 +255,14 @@ Write a test (in english) that you can picture for the class diagram you have cr
 
 You should feel free to number your brainstorm. 
 
-1. Test 1..
-2. Test 2..
+    
+    @Test
+    public void testFilterName() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> filtered = planner.filter("name == Go").toList();
+        assertEquals(1, filtered.size());
+        assertEquals("Go", filtered.get(0).getName());
+    }
 
 
 

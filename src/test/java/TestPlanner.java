@@ -1,4 +1,4 @@
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import student.BoardGame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,8 +19,8 @@ import student.GameData;
 public class TestPlanner {
     static Set<BoardGame> games;
 
-    @BeforeAll
-    public static void setup() {
+    @BeforeEach
+    public void setup() {
         games = new HashSet<>();
         games.add(new BoardGame("17 days", 6, 1, 8, 70, 70, 9.0, 600, 9.0, 2005));
         games.add(new BoardGame("Chess", 7, 2, 2, 10, 20, 10.0, 700, 10.0, 2006));

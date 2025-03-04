@@ -6,18 +6,36 @@ code as it is meant to help you understand some of the concepts.
 ## Technical Questions
 
 1. What is the difference between == and .equals in java? Provide a code example of each, where they would return different results for an object. Include the code snippet using the hash marks (```) to create a code block.
+
    ```java
-   // your code here
-   
+   // "==" checks for reference equality (memory location)
+   // equals() checks for value equality
+    public class EqualsVsDoubleEquals {
+        public static void main(String[] args) {
+            String str1 = new String("String");
+            String str2 = new String("String");
+
+            System.out.println(str1 == str2);      // false (different memory locations)
+            System.out.println(str1.equals(str2)); // true (same value)
+        }
+    }
    ```
-
-
-
 
 2. Logical sorting can be difficult when talking about case. For example, should "apple" come before "Banana" or after? How would you sort a list of strings in a case-insensitive manner? 
 
+   ```java
+    // In case-insensitive sorting, "apple" should come after "Banana."
+    import java.util.Arrays;  
 
-
+    public class Main {  
+        public static void main(String[] args) {  
+            String[] fruits = {"apple", "Banana", "cherry", "date"};  
+            Arrays.sort(fruits, String.CASE_INSENSITIVE_ORDER);  
+            System.out.println(Arrays.toString(fruits));  
+            // "apple", "Banana", "cherry", "date"
+        }  
+    }
+   ```
 
 
 3. In our version of the solution, we had the following code (snippet)
@@ -32,28 +50,33 @@ code as it is meant to help you understand some of the concepts.
         } else if (str.contains("<")) {
             return Operations.LESS_THAN;
         } else if (str.contains("=="))...
+    }
     ```
     Why would the order in which we checked matter (if it does matter)? Provide examples either way proving your point. 
-
-
+    ```java
+    // If we checked " > " or " < " first, then " >= " and " <= " would never match correctly
+    // Example:
+    public static Operations getOperatorFromStr(String str) {
+        if (str.contains(">")) {
+            return Operations.GREATER_THAN;
+        } else if (str.contains(">=")) { // This will never execute
+            return Operations.GREATER_THAN_EQUALS;
+        }
+        return null;
+    }
+    ```
 
 4. What is the difference between a List and a Set in Java? When would you use one over the other? 
-
-
-
+- List: Ordered, allows duplicates (e.g., ArrayList, LinkedList). Use a List when ordering matters or duplicates are required.
+- Set: Unordered, no duplicates allowed (e.g., HashSet, TreeSet). Use a Set when you need unique elements and fast lookups.
 
 5. In [GamesLoader.java](src/main/java/student/GamesLoader.java), we use a Map to help figure out the columns. What is a map? Why would we use a Map here? 
 
-
-
+-A Map is a key-value pair data structure. It is useful in GamesLoader.java to map column names to their respective indices, allowing fast lookups without iterating over an array.
 
 6. [GameData.java](src/main/java/student/GameData.java) is actually an `enum` with special properties we added to help with column name mappings. What is an `enum` in Java? Why would we use it for this application?
 
-
-
-
-
-
+- An enum is a special Java type used to define a fixed set of constants. In GameData.java, it allows mapping column names to specific properties.
 
 7. Rewrite the following as an if else statement inside the empty code block.
     ```java
@@ -70,7 +93,13 @@ code as it is meant to help you understand some of the concepts.
 
     ```java
     // your code here, don't forget the class name that is dropped in the switch block..
-    
+    if (ct == CMD_QUESTION || ct == CMD_HELP) {
+        processHelp();
+    } else if (ct == INVALID) {
+        CONSOLE.printf("%s%n", ConsoleText.INVALID);
+    } else {
+        CONSOLE.printf("%s%n", ConsoleText.INVALID);
+    }
     ```
 
 ## Deeper Thinking

@@ -2,10 +2,8 @@ package student;
 
 /**
  * Enum for the different operations that can be performed on a filter.
- * 
  * This is useful, as you can do the following in your code to easily get the parts
  * of a filter
- * 
  * <pre>
  *  private Stream<BoardGame> filterSingle(String filter, Stream<BoardGame> filteredGames) {
         Operations operator = Operations.getOperatorFromStr(filter);
@@ -30,7 +28,6 @@ package student;
         // both of the them take in both the GameData enum, Operator Enum, and the value to parse and filter on.
     }
  * </pre>
- * 
  * It is technically OPTIONAL for you to use this file, but
  * we included it as it was very useful in our solution.
  */
@@ -47,7 +44,6 @@ public enum Operations {
 
     /**
      * Constructor for the operations.
-     * 
      * @param operator The operator.
      */
     Operations(String operator) {
@@ -56,31 +52,15 @@ public enum Operations {
 
     /**
      * Get the operator.
-     * 
      * @return The operator.
      */
     public String getOperator() {
         return operator;
     }
 
-    /**
-     * Get the operation from the operator.
-     * 
-     * @param operator The operator.
-     * @return The operation.
-     */
-    public static Operations fromOperator(String operator) {
-        for (Operations op : Operations.values()) {
-            if (op.getOperator().equals(operator)) {
-                return op;
-            }
-        }
-        throw new IllegalArgumentException("No operator with name " + operator);
-    }
 
     /**
      * Get the operator from a string that contains it.
-     * 
      * @param str The string.
      * @return The operator.
      */
@@ -101,6 +81,22 @@ public enum Operations {
             return Operations.CONTAINS;
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Get the operator length from a string that contains it.
+     * @param str The string.
+     * @return int Length of operator.
+     */
+    public static int getOperatorLenFromStr(String str) {
+        if (str.contains(">=") || str.contains("<=") || str.contains("==") || str.contains("!=")
+        || str.contains("~=")) {
+            return 2;
+        } else if (str.contains(">") || str.contains("<")) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 }

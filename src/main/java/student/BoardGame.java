@@ -7,7 +7,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
  * Data Class for the Board Game Object.
- * 
  * This class is considered immutable, as every value is both final, and can only be accessed
  * through getters.
  */
@@ -35,7 +34,6 @@ public class BoardGame {
 
     /**
      * Constructor for the BoardGame object.
-     * 
      * @param name game name
      * @param id unique identifier
      * @param minPlayers minimum number of players
@@ -63,7 +61,6 @@ public class BoardGame {
 
     /**
      * Get the name of the game.
-     * 
      * @return name of the game
      */
     public String getName() {
@@ -72,7 +69,6 @@ public class BoardGame {
 
     /**
      * Get the unique identifier of the game.
-     * 
      * @return unique identifier
      */
     public int getId() {
@@ -81,7 +77,6 @@ public class BoardGame {
 
     /**
      * Get the minimum number of players.
-     * 
      * @return minimum number of players
      */
     public int getMinPlayers() {
@@ -90,7 +85,6 @@ public class BoardGame {
 
     /**
      * Get the maximum number of players.
-     * 
      * @return maximum number of players
      */
     public int getMaxPlayers() {
@@ -99,7 +93,6 @@ public class BoardGame {
 
     /**
      * Get the maximum play time in minutes.
-     * 
      * @return maximum play time in minutes
      */
     public int getMaxPlayTime() {
@@ -109,7 +102,6 @@ public class BoardGame {
 
     /**
      * Get the minimum play time in minutes.
-     * 
      * @return minimum play time in minutes
      */
     public int getMinPlayTime() {
@@ -119,7 +111,6 @@ public class BoardGame {
 
     /**
      * Get the average difficulty of the game.
-     * 
      * @return average difficulty of the game
      */
     public double getDifficulty() {
@@ -129,7 +120,6 @@ public class BoardGame {
 
     /**
      * Get the rank of the game. The rank is defined on its rankings in BGGeek.
-     * 
      * @return rank of the game
      */
     public int getRank() {
@@ -139,7 +129,6 @@ public class BoardGame {
 
     /**
      * Get the average rating of the game.
-     * 
      * @return average rating of the game
      */
     public double getRating() {
@@ -149,7 +138,6 @@ public class BoardGame {
 
     /**
      * Get the year the game was published.
-     * 
      * @return year the game was published
      */
     public int getYearPublished() {
@@ -158,9 +146,7 @@ public class BoardGame {
 
     /**
      * Get the Name (value) pair based on the GameData enum.
-     * 
      * In the case of Name, it will return only the name of the game.
-     * 
      * @param col GameData enum value
      * @return value of Name (value) pair
      */
@@ -191,7 +177,6 @@ public class BoardGame {
 
     /**
      * Get a toString that shows all values of the object.
-     * 
      * @return string representation of the object
      */
     @Override
@@ -204,11 +189,9 @@ public class BoardGame {
 
     /**
      * Check if two BoardGame objects are equal.
-     * 
      * Two BoardGame objects are considered equal if all fields are equal, except for the following:
      * - minPlayers - maxPlayers - maxPlayTime - minPlayTime - difficulty - rank - averageRating -
      * yearPublished
-     * 
      * @param obj object to compare
      * @return true if the objects are equal, false otherwise
      */
@@ -221,10 +204,8 @@ public class BoardGame {
 
     /**
      * Get the hash code of the object.
-     * 
      * The hash code is based on all fields, except for the following: - minPlayers - maxPlayers -
      * maxPlayTime - minPlayTime - difficulty - rank - averageRating - yearPublished
-     * 
      * @return hash code of the object
      */
     @Override
@@ -234,14 +215,11 @@ public class BoardGame {
                         "rank", "averageRating", "yearPublished"));
     }
 
-
     /**
      * Simple main we used for testing.
-     * 
      * It is possible to include small mains in each class as you develop to test/practice different
      * things you are working on. We left this in to demonstrate that it is possible to have a main
      * across multiple classes.
-     * 
      * @param args command line arguments
      */
     public static void main(String[] args) { // used for local quick tests
