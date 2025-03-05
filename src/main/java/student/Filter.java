@@ -1,7 +1,5 @@
 package student;
 
-import static student.Operations.getOperatorLenFromStr;
-
 /**
  * The Filter class provides functionality for filtering board games based on various criteria.
  * It implements a flexible filtering system that allows users to filter games based on different
@@ -67,8 +65,8 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex || 
-                    (index == opIndex && operator.length() > operation.getOperator().length())) {
+                if (opIndex == -1 || index < opIndex 
+                ||(index == opIndex && operator.length() > operation.getOperator().length())) {
                     op = operation;
                     opIndex = index;
                 }
@@ -107,15 +105,10 @@ public final class Filter {
             if (gameName == null) {
                 return false;
             }
-            // Split search terms by spaces and check if all terms are contained
-            String[] searchTerms = value.trim().toLowerCase().split("\\s+");
+            // For name search, treat the entire value as one search term
+            String searchTerm = value.trim().toLowerCase();
             String gameNameLower = gameName.toLowerCase();
-            for (String term : searchTerms) {
-                if (!gameNameLower.contains(term)) {
-                    return false;
-                }
-            }
-            return true;
+            return gameNameLower.contains(searchTerm);
         }
 
         // Handle other operations
