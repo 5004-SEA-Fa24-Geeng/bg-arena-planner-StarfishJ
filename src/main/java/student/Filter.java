@@ -40,7 +40,6 @@ public final class Filter {
     /**
      * Private constructor for Filter class.
      * Use {@link #parseCondition(String)} to create a new Filter instance.
-     *
      * @param column    The game data column to filter on
      * @param operation The operation to apply
      * @param value     The value to compare against
@@ -54,7 +53,6 @@ public final class Filter {
     /**
      * Parses a condition string and creates a new Filter instance.
      * The condition string should be in the format: "column operator value"
-     *
      * @param condition The condition string to parse
      * @return A new Filter instance, or null if the condition is invalid
      */
@@ -118,7 +116,6 @@ public final class Filter {
 
     /**
      * Applies the filter to a board game.
-     *
      * @param game The board game to check
      * @return true if the game matches the filter condition, false otherwise
      */
@@ -202,7 +199,6 @@ public final class Filter {
 
     /**
      * Gets the game value for comparison based on the column.
-     *
      * @param game The board game to get the value from
      * @return The comparable value from the game
      */
@@ -239,7 +235,6 @@ public final class Filter {
 
     /**
      * Parses the filter value to a comparable type.
-     *
      * @return The parsed filter value as a Comparable object
      */
     private Comparable<?> parseFilterValue() {
@@ -269,7 +264,6 @@ public final class Filter {
 
     /**
      * Gets the operation used in this filter.
-     *
      * @return The operation
      */
     public Operations getOperation() {

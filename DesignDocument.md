@@ -273,6 +273,153 @@ Go through your completed code, and update your class diagram to reflect the fin
 
 For the final design, you just need to do a single diagram that includes both the original classes and the classes you added. 
 
+```mermaid
+classDiagram
+    class IPlanner {
+        <<interface>>
+        +filter(String) Stream~BoardGame~
+        +filter(String, GameData) Stream~BoardGame~
+        +filter(String, GameData, boolean) Stream~BoardGame~
+        +reset() void
+    }
+
+    class Planner {
+        -Set~BoardGame~ allGames
+        -List~BoardGame~ filteredGames
+        +Planner(Set~BoardGame~)
+        +filter(String) Stream~BoardGame~
+        +filter(String, GameData) Stream~BoardGame~
+        +filter(String, GameData, boolean) Stream~BoardGame~
+        +reset() void
+        -createComparator(GameData) Comparator~BoardGame~
+    }
+
+    class BoardGame {
+        -String name
+        -int id
+        -int minPlayers
+        -int maxPlayers
+        -int minPlayTime
+        -int maxPlayTime
+        -double difficulty
+        -int rank
+        -double averageRating
+        -int yearPublished
+        +BoardGame(String, int, int, int, int, int, double, int, double, int)
+        +getName() String
+        +getId() int
+        +getMinPlayers() int
+        +getMaxPlayers() int
+        +getMinPlayTime() int
+        +getMaxPlayTime() int
+        +getDifficulty() double
+        +getRank() int
+        +getRating() double
+        +getYearPublished() int
+    }
+
+    class Filter {
+        -GameData column
+        -Operations operation
+        -String value
+        -Filter(GameData, Operations, String)
+        +static parseCondition(String) Filter
+        +apply(BoardGame) boolean
+        -getGameValue(BoardGame) Comparable
+        -parseFilterValue() Comparable
+        +getOperation() Operations
+        +getColumn() GameData
+        +getValue() String
+    }
+
+    class GameData {
+        <<enumeration>>
+        NAME
+        YEAR
+        MAX_TIME
+        MIN_TIME
+        DIFFICULTY
+        RANK
+        MAX_PLAYERS
+        MIN_PLAYERS
+        RATING
+        +fromString(String) GameData
+        +getColumnName() String
+    }
+
+    class Operations {
+        <<enumeration>>
+        GREATER_THAN
+        LESS_THAN
+        EQUALS
+        NOT_EQUALS
+        CONTAINS
+        GREATER_THAN_EQUALS
+        LESS_THAN_EQUALS
+        +getOperator() String
+    }
+
+    class IGameList {
+        <<interface>>
+        +addToList(String, Stream~BoardGame~) void
+        +getGameNames() List~String~
+        +count() int
+        +clear() void
+    }
+
+    class GameList {
+        -List~BoardGame~ gameList
+        +GameList()
+        +addToList(String, Stream~BoardGame~) void
+        +getGameNames() List~String~
+        +count() int
+        +clear() void
+    }
+
+    class ConsoleApp {
+        -Scanner input
+        -Scanner current
+        -IPlanner planner
+        -IGameList gameList
+        +ConsoleApp(IPlanner)
+        +start() void
+        -processFilter() void
+        -processHelp() void
+        -processListCommands() void
+        -nextCommand() ConsoleText
+        -remainder() String
+    }
+
+    class BGArenaPlanner {
+        +main(String[]) void
+    }
+
+    class SortCriterion {
+        +sortGames(List~BoardGame~, GameData, boolean) void
+    }
+
+    class GamesLoader {
+        -List~BoardGame~ games
+        +GamesLoader()
+        +loadGames(String) Set~BoardGame~
+        -parseGame(String[]) BoardGame
+    }
+
+    IPlanner <|.. Planner
+    IGameList <|.. GameList
+    Planner --> BoardGame
+    Planner --> Filter
+    Filter --> GameData
+    Filter --> Operations
+    Filter --> BoardGame
+    GameList --> BoardGame
+    ConsoleApp --> IPlanner
+    ConsoleApp --> IGameList
+    BGArenaPlanner --> ConsoleApp
+    BGArenaPlanner --> GamesLoader
+    Planner --> SortCriterion
+    GamesLoader --> BoardGame
+```
 > [!WARNING]
 > If you resubmit your assignment for manual grading, this is a section that often needs updating. You should double check with every resubmit to make sure it is up to date.
 
