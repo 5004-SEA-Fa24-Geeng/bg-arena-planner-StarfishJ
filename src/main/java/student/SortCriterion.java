@@ -25,7 +25,9 @@ import java.util.function.Function;
  * @version 1.0
  */
 public class SortCriterion {
+    /** The field to sort by. */
     private final GameData field;
+    /** Whether to sort in ascending order. */
     private final boolean ascending;
 
     /**

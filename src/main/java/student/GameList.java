@@ -40,6 +40,7 @@ import java.util.stream.Stream;
  * @version 1.0
  */
 public class GameList implements IGameList {
+    /** The set of board games in the list. */
     private Set<BoardGame> gameList;
 
     /**
@@ -178,15 +179,18 @@ public class GameList implements IGameList {
                 String[] parts = str.split("-");
                 int start = Integer.parseInt(parts[0]);
                 int end = Integer.parseInt(parts[1]);
-                if (start < 1 || end > sortedList.size() || start > end)
-                    throw new IllegalArgumentException("Invalid range. " +
-                            "Please enter numbers between 1 and " + sortedList.size());
+                if (start < 1 || end > sortedList.size() || start > end) {
+                    throw new IllegalArgumentException("Invalid range. "
+                            + "Please enter numbers between 1 and " + sortedList.size());
+                }
                 gameList.removeAll(sortedList.subList(start - 1, end));
             } else {
                 // Check if input is a number (existing index-based removal)
                 try {
                     int index = Integer.parseInt(str) - 1;
-                    if (index < 0 || index >= sortedList.size()) throw new IllegalArgumentException();
+                    if (index < 0 || index >= sortedList.size()) {
+                        throw new IllegalArgumentException();
+                    }
                     gameList.remove(sortedList.get(index));
                 } catch (NumberFormatException e) {
                     // If not a number, treat as game name

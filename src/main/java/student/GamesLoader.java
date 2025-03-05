@@ -86,9 +86,15 @@ public final class GamesLoader {
             e.printStackTrace(); 
         } finally {
             try {
-                if (reader != null) reader.close();
-                if (isr != null) isr.close();
-                if (is != null) is.close();
+                if (reader != null) {
+                    reader.close();
+                }
+                if (isr != null) {
+                    isr.close();
+                }
+                if (is != null) {
+                    is.close();
+                }
             } catch (IOException e) {
                 System.err.println("Error closing resources: " + e.getMessage());
             }

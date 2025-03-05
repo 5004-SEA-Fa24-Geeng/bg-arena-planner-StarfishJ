@@ -18,7 +18,7 @@ import java.io.InputStream;
  */
 public class ConsoleApp {
     /** Interaction with the system terminal/command line. */
-    private static Scanner IN;
+    private static Scanner input;
     /** Default name to save the game list to. */
     private static final String DEFAULT_FILENAME = "games_list.txt";
     /** random number generator only needs to be built once. */
@@ -39,7 +39,9 @@ public class ConsoleApp {
     public ConsoleApp(IGameList gameList, IPlanner planner) {
         this.gameList = gameList;
         this.planner = planner;
-        IN = new Scanner(System.in);
+        if (input == null) {
+            input = new Scanner(System.in);
+        }
     }    
 
     /**
@@ -70,13 +72,19 @@ public class ConsoleApp {
             }
 
             // clean up scanner.
-            current.close();
-            current = null;
+            if (current != null) {
+                current.close();
+                current = null;
+            }
             // get the next prompt
             ct = nextCommand();
         }
 
         printOutput("%s%n", ConsoleText.GOODBYE);
+        if (input != null) {
+            input.close();
+            input = null;
+        }
     }
 
     /**
@@ -297,13 +305,13 @@ public class ConsoleApp {
         System.out.printf(format, args);
         System.out.flush(); // 确保提示信息被输出
         
-        if (IN == null) {
-            IN = new Scanner(System.in); // 如果 Scanner 为空，重新初始化
+        if (input == null) {
+            input = new Scanner(System.in); // 如果 Scanner 为空，重新初始化
         }
         
         try {
-            if (IN.hasNextLine()) {
-                return IN.nextLine();
+            if (input.hasNextLine()) {
+                return input.nextLine();
             }
         } catch (Exception e) {
             System.err.println("Error reading input: " + e.getMessage());

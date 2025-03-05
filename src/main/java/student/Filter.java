@@ -26,8 +26,11 @@ import static student.Operations.getOperatorLenFromStr;
  */
 public final class Filter {
     
+    /** The game data column to filter on. */
     private final GameData column;
+    /** The operation to apply for filtering. */
     private final Operations operation;
+    /** The value to compare against. */
     private final String value;
 
     /**
@@ -106,6 +109,13 @@ public final class Filter {
             return false;
         }
 
+        // 对于 CONTAINS 操作，我们直接进行字符串比较
+        if (operation == Operations.CONTAINS) {
+            return gameValue.toString().toLowerCase()
+                    .contains(filterValue.toString().toLowerCase());
+        }
+
+        // 对于其他操作，我们需要确保类型匹配
         if (gameValue.getClass().isInstance(filterValue)) {
             @SuppressWarnings("unchecked")
             Comparable<Object> typedGameValue = (Comparable<Object>) gameValue;
@@ -116,8 +126,6 @@ public final class Filter {
                 case LESS_THAN_EQUALS -> typedGameValue.compareTo(filterValue) <= 0;
                 case EQUALS -> typedGameValue.compareTo(filterValue) == 0;
                 case NOT_EQUALS -> typedGameValue.compareTo(filterValue) != 0;
-                case CONTAINS -> gameValue.toString().toLowerCase()
-                        .contains(filterValue.toString().toLowerCase());
                 default -> false;
             };
         }
