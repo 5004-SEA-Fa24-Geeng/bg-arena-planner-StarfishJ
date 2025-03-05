@@ -32,10 +32,10 @@ import java.util.stream.Stream;
  * @version 1.0
  */
 public class Planner implements IPlanner {
-    /** List of all board games in the collection */
+    /** List of all board games in the collection. */
     private Set<BoardGame> allGames;
     
-    /** List of currently filtered board games */
+    /** List of currently filtered board games. */
     private List<BoardGame> filteredGames;
 
     /**
@@ -85,9 +85,8 @@ public class Planner implements IPlanner {
      */
     @Override
     public Stream<BoardGame> filter(String filter, GameData sortOn, boolean ascending) {
-        if (filteredGames.isEmpty()) {
-            filteredGames = new ArrayList<>(allGames);
-        }
+        // 每次过滤时都重新初始化过滤列表
+        filteredGames = new ArrayList<>(allGames);
 
         // Apply filters if there are any
         if (!filter.isEmpty()) {
