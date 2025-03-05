@@ -3,35 +3,39 @@ package student;
 import static student.Operations.getOperatorLenFromStr;
 
 /**
- * Utility class to handle filter parsing and application for board games.
+ * The Filter class provides functionality for filtering board games based on various criteria.
+ * It implements a flexible filtering system that allows users to filter games based on different
+ * attributes such as name, player count, play time, difficulty, etc.
+ *
+ * The class supports various comparison operations including:
+ * - Greater than (>)
+ * - Less than (<)
+ * - Equal to (==)
+ * - Not equal to (!=)
+ * - Contains (~=)
+ * - Greater than or equal to (>=)
+ * - Less than or equal to (<=)
+ *
+ * Example usage:
+ * Filter.parseCondition("minPlayers>2") - finds games that support more than 2 players
+ * Filter.parseCondition("name~=chess") - finds games with "chess" in their name
+ * Filter.parseCondition("rating>=8.0") - finds games rated 8.0 or higher
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public final class Filter {
-    /* column to filter on */
+    
     private final GameData column;
-    /* operation to apply */
     private final Operations operation;
-    /* value to compare against */
     private final String value;
 
-    /**
-     * Constructor for Filter.
-     *
-     * @param column    the column to filter on
-     * @param operation the operation to apply
-     * @param value     the value to compare against
-     */
     private Filter(GameData column, Operations operation, String value) {
         this.column = column;
         this.operation = operation;
         this.value = value;
     }
 
-    /**
-     * Parses a condition string into a Filter object.
-     *
-     * @param condition the condition string to parse
-     * @return a Filter object or null if parsing fails
-     */
     public static Filter parseCondition(String condition) {
         if (condition == null || condition.trim().isEmpty()) {
             return null;
@@ -73,38 +77,33 @@ public final class Filter {
         return new Filter(column, op, value);
     }
 
-    /**
-     * Applies the filter to a BoardGame object.
-     *
-     * @param game the BoardGame object to apply the filter to
-     * @return true if the game matches the filter, false otherwise
-     */
     public boolean apply(BoardGame game) {
-        Comparable gameValue = getGameValue(game);
-        Comparable filterValue = parseFilterValue();
+        Comparable<?> gameValue = getGameValue(game);
+        Comparable<?> filterValue = parseFilterValue();
 
         if (gameValue == null || filterValue == null) {
             return false;
         }
 
-        return switch (operation) {
-            case GREATER_THAN -> gameValue.compareTo(filterValue) > 0;
-            case LESS_THAN -> gameValue.compareTo(filterValue) < 0;
-            case GREATER_THAN_EQUALS -> gameValue.compareTo(filterValue) >= 0;
-            case LESS_THAN_EQUALS -> gameValue.compareTo(filterValue) <= 0;
-            case EQUALS -> gameValue.compareTo(filterValue) == 0;
-            case NOT_EQUALS -> gameValue.compareTo(filterValue) != 0;
-            case CONTAINS -> gameValue.toString().toLowerCase()
-                    .contains(filterValue.toString().toLowerCase());
-            default -> false;
-        };
+        if (gameValue.getClass().isInstance(filterValue)) {
+            @SuppressWarnings("unchecked")
+            Comparable<Object> typedGameValue = (Comparable<Object>) gameValue;
+            return switch (operation) {
+                case GREATER_THAN -> typedGameValue.compareTo(filterValue) > 0;
+                case LESS_THAN -> typedGameValue.compareTo(filterValue) < 0;
+                case GREATER_THAN_EQUALS -> typedGameValue.compareTo(filterValue) >= 0;
+                case LESS_THAN_EQUALS -> typedGameValue.compareTo(filterValue) <= 0;
+                case EQUALS -> typedGameValue.compareTo(filterValue) == 0;
+                case NOT_EQUALS -> typedGameValue.compareTo(filterValue) != 0;
+                case CONTAINS -> gameValue.toString().toLowerCase()
+                        .contains(filterValue.toString().toLowerCase());
+                default -> false;
+            };
+        }
+        return false;
     }
 
-    /**
-     * Returns the column to filter on.
-     * @return the column to filter on
-     */
-    private Comparable getGameValue(BoardGame game) {
+    private Comparable<?> getGameValue(BoardGame game) {
         return switch (column) {
             case NAME -> game.getName();
             case YEAR -> game.getYearPublished();
@@ -119,11 +118,7 @@ public final class Filter {
         };
     }
 
-    /**
-     * Parses the filter value based on the column type.
-     * @return the parsed filter value
-     */
-    private Comparable parseFilterValue() {
+    private Comparable<?> parseFilterValue() {
         try {
             return switch (column) {
                 case NAME -> value;

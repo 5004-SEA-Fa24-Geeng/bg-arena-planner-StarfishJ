@@ -3,6 +3,7 @@ package student;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,36 +31,57 @@ public final class GamesLoader {
 
     /**
      * Loads the games from the csv file into a set of BoardGame objects.
-     * 
      * @param filename the name of the file to load
      * @return a set of BoardGame objects
      */
     public static Set<BoardGame> loadGamesFile(String filename) {
-
         Set<BoardGame> games = new HashSet<>();
-
-        List<String> lines;
+        InputStream is = null;
+        InputStreamReader isr = null;
+        BufferedReader reader = null;
+        
         try {
-            // this is so we can store the files in the resources folder
-            InputStream is = GamesLoader.class.getResourceAsStream(filename);
-            InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(isr);
-            lines = reader.lines().collect(Collectors.toList());
+            // 尝试多种方式加载资源文件
+            is = GamesLoader.class.getResourceAsStream("/" + filename);
+            if (is == null) {
+                is = GamesLoader.class.getClassLoader().getResourceAsStream(filename);
+            }
+            if (is == null) {
+                is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+            }
+            
+            if (is == null) {
+                System.err.println("Error: Could not find resource file: " + filename);
+                return games;
+            }
+            
+            isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+            reader = new BufferedReader(isr);
+            List<String> lines = reader.lines().collect(Collectors.toList());
+            
+            if (lines.isEmpty()) {
+                return games;
+            }
+
+            Map<GameData, Integer> columnMap = processHeader(lines.remove(0));
+            games = lines.stream()
+                    .map(line -> toBoardGame(line, columnMap))
+                    .filter(game -> game != null)
+                    .collect(Collectors.toSet());
+                    
         } catch (Exception e) {
             System.err.println("Error reading file: " + e.getMessage());
-            return games;
+            e.printStackTrace(); 
+        } finally {
+            try {
+                if (reader != null) reader.close();
+                if (isr != null) isr.close();
+                if (is != null) is.close();
+            } catch (IOException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
-        if (lines == null || lines.isEmpty()) {
-            return games;
-        }
-
-        Map<GameData, Integer> columnMap = processHeader(lines.remove(0));
-
-        games = lines.stream().map(line -> toBoardGame(line, columnMap))
-                .filter(game -> game != null).collect(Collectors.toSet());
-
         return games;
-
     }
 
     /**

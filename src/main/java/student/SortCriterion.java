@@ -1,47 +1,54 @@
 package student;
 
 import java.util.Comparator;
+import java.util.function.Function;
 
 /**
- * Class to represent a sorting criterion for board games.
+ * SortCriterion class provides functionality for sorting board games based on various criteria.
+ * It implements type-safe comparison operations for different game attributes.
+ *
+ * The class supports sorting by any GameData attribute and handles both ascending and
+ * descending order. It uses Java's Comparator interface to provide type-safe comparisons.
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public class SortCriterion {
-    /* column to sort on */
-    private final GameData sortOn;
-    /* true for ascending order, false for descending */
+    private final GameData field;
     private final boolean ascending;
 
     /**
      * Constructor for SortCriterion.
-     * @param sortOn    the column to sort on
-     * @param ascending true for ascending order, false for descending
+     * @param field The field to sort by
+     * @param ascending Whether to sort in ascending order
      */
-    public SortCriterion(GameData sortOn, boolean ascending) {
-        if (sortOn == GameData.ID) {
-            throw new IllegalArgumentException("Sorting by ID is not allowed.");
-        }
-        this.sortOn = sortOn;
+    public SortCriterion(GameData field, boolean ascending) {
+        this.field = field;
         this.ascending = ascending;
     }
 
     /**
-     * Returns a Comparator based on the sorting criteria.
+     * Creates a comparator for the specified sort criterion.
+     * @return A type-safe comparator for BoardGame objects
      */
-    public Comparator<BoardGame> getComparator() {
-        Comparator<BoardGame> comparator = Comparator.comparing(this::getGameValue);
-
-        if (!ascending) {
-            comparator = comparator.reversed();
-        }
-
-        return comparator;
+    public Comparator<BoardGame> createComparator() {
+        Function<BoardGame, ? extends Comparable<?>> valueExtractor = this::getGameValue;
+        @SuppressWarnings("unchecked")
+        Comparator<BoardGame> comparator = (bg1, bg2) -> {
+            Comparable val1 = valueExtractor.apply(bg1);
+            Comparable val2 = valueExtractor.apply(bg2);
+            return val1.compareTo(val2);
+        };
+        return ascending ? comparator : comparator.reversed();
     }
 
     /**
-     * Extracts the comparable value from the game based on the sorting column.
+     * Gets the value to compare for a given board game.
+     * @param game The board game to get the value from
+     * @return A comparable value based on the sort field
      */
-    private Comparable getGameValue(BoardGame game) {
-        return switch (sortOn) {
+    private Comparable<?> getGameValue(BoardGame game) {
+        return switch (field) {
             case NAME -> game.getName();
             case YEAR -> game.getYearPublished();
             case MAX_TIME -> game.getMaxPlayTime();
@@ -51,7 +58,7 @@ public class SortCriterion {
             case MAX_PLAYERS -> game.getMaxPlayers();
             case MIN_PLAYERS -> game.getMinPlayers();
             case RATING -> game.getRating();
-            default -> throw new IllegalStateException("Unexpected sorting column: " + sortOn);
+            default -> "";
         };
     }
 }

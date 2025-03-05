@@ -6,7 +6,30 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Planner class to manage and filter board games.
+ * Planner implements the IPlanner interface and serves as the core filtering and sorting
+ * engine for the Board Game Arena Planner. This class manages a collection of board games
+ * and provides sophisticated filtering and sorting capabilities.
+ *
+ * Key features:
+ * - Progressive filtering: Each filter operation builds upon previous filters
+ * - Multiple filter criteria: Support for combining multiple conditions
+ * - Flexible sorting: Sort results by any game attribute
+ * - Bidirectional sorting: Support for both ascending and descending order
+ * - Filter persistence: Maintains filter state until explicitly reset
+ *
+ * Filter syntax examples:
+ * - minPlayers>2: Games that support more than 2 players
+ * - maxTime<60: Games that take less than 60 minutes
+ * - name~=chess: Games with "chess" in their name
+ * - rating>=8: Games rated 8 or higher
+ *
+ * Sort examples:
+ * - sort:name:asc - Sort by name in ascending order
+ * - sort:rating:desc - Sort by rating in descending order
+ * - sort:year - Sort by year (default ascending)
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public class Planner implements IPlanner {
     // List of all board games

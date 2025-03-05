@@ -1,35 +1,29 @@
 package student;
 
 /**
- * Enum for the different operations that can be performed on a filter.
- * This is useful, as you can do the following in your code to easily get the parts
- * of a filter
- * <pre>
- *  private Stream<BoardGame> filterSingle(String filter, Stream<BoardGame> filteredGames) {
-        Operations operator = Operations.getOperatorFromStr(filter);
-        if (operator == null) {
-            return filteredGames;
-        }
-        // remove spaces
-        filter = filter.replaceAll(" ", "");
-
-        String[] parts = filter.split(operator.getOperator());
-        if (parts.length != 2) {
-            return filteredGames;
-        }
-        GameData column;
-        try {
-            column = GameData.fromString(parts[0]);
-        } catch (IllegalArgumentException e) {
-            return filteredGames;
-        }
-        // more work here to filter the games
-        // we found creating a String filter and a Number filter to be useful.
-        // both of the them take in both the GameData enum, Operator Enum, and the value to parse and filter on.
-    }
- * </pre>
- * It is technically OPTIONAL for you to use this file, but
- * we included it as it was very useful in our solution.
+ * Operations is an enumeration that defines the comparison operations available for
+ * filtering board games in the Board Game Arena Planner.
+ *
+ * This enum provides a comprehensive set of comparison operators that can be used
+ * to create complex filtering conditions. Each operator is represented by its
+ * symbolic form and includes functionality to parse and apply the operation.
+ *
+ * Supported operations:
+ * - GREATER_THAN (>): Tests if a value is greater than the comparison value
+ * - LESS_THAN (<): Tests if a value is less than the comparison value
+ * - EQUALS (==): Tests if a value equals the comparison value
+ * - NOT_EQUALS (!=): Tests if a value does not equal the comparison value
+ * - CONTAINS (~=): Tests if a string contains the comparison value
+ * - GREATER_THAN_EQUALS (>=): Tests if a value is greater than or equal to the comparison value
+ * - LESS_THAN_EQUALS (<=): Tests if a value is less than or equal to the comparison value
+ *
+ * The enum also provides utility methods for:
+ * - Getting the operator symbol
+ * - Finding the operator length in a string
+ * - Parsing operators from strings
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public enum Operations {
 

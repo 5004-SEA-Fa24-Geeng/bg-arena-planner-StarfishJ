@@ -6,6 +6,7 @@ import java.util.Properties;
 import java.util.Scanner;
 import java.util.stream.Stream;
 import java.util.Random;
+import java.io.InputStream;
 
 
 /**
@@ -17,7 +18,7 @@ import java.util.Random;
  */
 public class ConsoleApp {
     /** Interaction with the system terminal/command line. */
-    private static final Scanner IN = new Scanner(System.in);
+    private static Scanner IN;
     /** Default name to save the game list to. */
     private static final String DEFAULT_FILENAME = "games_list.txt";
     /** random number generator only needs to be built once. */
@@ -38,6 +39,7 @@ public class ConsoleApp {
     public ConsoleApp(IGameList gameList, IPlanner planner) {
         this.gameList = gameList;
         this.planner = planner;
+        IN = new Scanner(System.in);
     }    
 
     /**
@@ -254,15 +256,26 @@ public class ConsoleApp {
 
     /**
      * Get the next command from the user.
-     * 
      * @return the next command.
      */
     private ConsoleText nextCommand() {
         if (current == null || !current.hasNext()) {
             String line = getInput("%s", ConsoleText.PROMPT);
-            current = new Scanner(line.trim()); // now split up the line
+            if (line.isEmpty()) {
+                return ConsoleText.CMD_EXIT; // 如果输入为空，优雅地退出
+            }
+            current = new Scanner(line.trim());
         }
-        return ConsoleText.fromString(current.next()); // get the command
+
+        if (!current.hasNext()) {
+            return ConsoleText.INVALID;
+        }
+
+        try {
+            return ConsoleText.fromString(current.next());
+        } catch (Exception e) {
+            return ConsoleText.INVALID;
+        }
     }
 
     /**
@@ -282,13 +295,21 @@ public class ConsoleApp {
      */
     private static String getInput(String format, Object... args) {
         System.out.printf(format, args);
+        System.out.flush(); // 确保提示信息被输出
+        
         if (IN == null) {
-            return "";
+            IN = new Scanner(System.in); // 如果 Scanner 为空，重新初始化
         }
-        if (!IN.hasNextLine()) {
-            return "";
+        
+        try {
+            if (IN.hasNextLine()) {
+                return IN.nextLine();
+            }
+        } catch (Exception e) {
+            System.err.println("Error reading input: " + e.getMessage());
         }
-        return IN.nextLine();
+        
+        return "";
     }
 
     /** 
@@ -366,9 +387,20 @@ public class ConsoleApp {
          */
         static {
             try {
-                CTEXT.loadFromXML(ConsoleApp.class.getResourceAsStream("/console.properties"));
+                InputStream is = ConsoleApp.class.getResourceAsStream("/console.properties");
+                if (is != null) {
+                    CTEXT.loadFromXML(is);
+                } else {
+                    System.err.println("Warning: Could not find console.properties");
+                    // 设置一些默认值
+                    CTEXT.setProperty("welcome", "*******Welcome to the BoardGame Arena Planner! *******");
+                    CTEXT.setProperty("prompt", "> ");
+                    CTEXT.setProperty("exit", "exit");
+                    CTEXT.setProperty("help", "help");
+                    CTEXT.setProperty("invalid", "Invalid command. Type 'help' for available commands.");
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Error loading properties: " + e.getMessage());
             }
         }
     }

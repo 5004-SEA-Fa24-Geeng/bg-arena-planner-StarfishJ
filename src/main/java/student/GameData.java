@@ -1,12 +1,30 @@
 package student;
 
 /**
- * Enum to represent the columns in the game data.
- * This is to make it easier to access the column names
- * from the CSV file, without knowing
- * the names of the specific columns anywhere else in the program.
- * Throughout your program, you will use GameData when parsing anything
- * that is associated with column names (filter) and sorting.
+ * GameData is an enumeration that defines the various attributes of board games that can be
+ * used for filtering and sorting operations in the Board Game Arena Planner.
+ * 
+ * Each enum constant represents a specific attribute of a board game and maps to a corresponding
+ * column name in the CSV data file. This mapping allows for flexible data loading and manipulation
+ * while maintaining a clean separation between the internal representation and external data format.
+ *
+ * The enum provides methods for:
+ * - Converting between column names and enum values
+ * - Converting between string representations and enum values
+ * - Accessing the original column names from the CSV file
+ *
+ * Supported attributes include:
+ * - NAME: The name of the board game
+ * - ID: Unique identifier for the game
+ * - RATING: Average user rating
+ * - DIFFICULTY: Game complexity/weight
+ * - RANK: Overall ranking
+ * - MIN/MAX_PLAYERS: Player count range
+ * - MIN/MAX_TIME: Play time range
+ * - YEAR: Publication year
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public enum GameData {
     /**

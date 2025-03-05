@@ -11,7 +11,33 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Class representing a list of board games.
+ * GameList implements the IGameList interface and provides functionality for managing
+ * a collection of board games. This class serves as a core component of the Board Game
+ * Arena Planner, allowing users to maintain and manipulate their list of games.
+ *
+ * Key features include:
+ * - Adding games individually or in ranges
+ * - Removing games from the list
+ * - Saving the game list to a file
+ * - Maintaining unique entries (no duplicates)
+ * - Case-insensitive operations
+ * - Automatic sorting of game names
+ *
+ * The class supports various ways to add games:
+ * - By exact name
+ * - By index number
+ * - By range (e.g., "1-5")
+ * - All games from a filtered list
+ *
+ * Example usage:
+ * - add "Chess" - adds a specific game
+ * - add "1-3" - adds games at positions 1 through 3
+ * - add "all" - adds all games from the current filter
+ * - remove "Chess" - removes a specific game
+ * - save "mylist.txt" - saves the current list to a file
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public class GameList implements IGameList {
     private Set<BoardGame> gameList;
