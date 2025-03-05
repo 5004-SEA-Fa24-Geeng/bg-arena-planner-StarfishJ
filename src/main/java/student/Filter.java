@@ -109,10 +109,14 @@ public final class Filter {
             return false;
         }
 
-        // 对于 CONTAINS 操作，我们直接进行字符串比较
+        // 对于 CONTAINS 操作，我们只处理 NAME 字段
         if (operation == Operations.CONTAINS) {
-            return gameValue.toString().toLowerCase()
-                    .contains(filterValue.toString().toLowerCase());
+            if (column != GameData.NAME) {
+                return false;  // CONTAINS 操作只支持 NAME 字段
+            }
+            String gameName = gameValue.toString();
+            String searchTerm = filterValue.toString();
+            return gameName.toLowerCase().contains(searchTerm.toLowerCase());
         }
 
         // 对于其他操作，我们需要确保类型匹配
