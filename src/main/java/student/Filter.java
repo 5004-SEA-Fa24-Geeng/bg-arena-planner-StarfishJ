@@ -109,17 +109,17 @@ public final class Filter {
             return false;
         }
 
-        // 对于 CONTAINS 操作，我们只处理 NAME 字段
+        // only use CONTAINS with NAME
         if (operation == Operations.CONTAINS) {
             if (column != GameData.NAME) {
-                return false;  // CONTAINS 操作只支持 NAME 字段
+                return false;
             }
             String gameName = gameValue.toString();
             String searchTerm = filterValue.toString();
             return gameName.toLowerCase().contains(searchTerm.toLowerCase());
         }
 
-        // 对于其他操作，我们需要确保类型匹配
+        // for other operations, we need to ensure type matching
         if (gameValue.getClass().isInstance(filterValue)) {
             @SuppressWarnings("unchecked")
             Comparable<Object> typedGameValue = (Comparable<Object>) gameValue;
