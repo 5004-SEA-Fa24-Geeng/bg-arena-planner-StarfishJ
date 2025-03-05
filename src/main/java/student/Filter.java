@@ -71,8 +71,9 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex || 
-                    (index == opIndex && operator.length() > (op != null ? op.getOperator().length() : 0))) {
+                if (opIndex == -1 
+                    || index < opIndex 
+                    || (index == opIndex && operator.length() > (op != null ? op.getOperator().length() : 0))) {
                     op = operation;
                     opIndex = index;
                 }
@@ -98,7 +99,6 @@ public final class Filter {
                 value.startsWith("~") || value.startsWith("!")) {
                 value = value.substring(1).trim();
             }
-            System.out.println("Name operation value after processing: '" + value + "'");
         } else {
             // Remove all spaces for other operations
             value = value.replaceAll("\\s+", "");
@@ -140,16 +140,11 @@ public final class Filter {
             
             // Special handling for CONTAINS operation
             if (operation == Operations.CONTAINS) {
-                //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
                 return gameNameLower.contains(searchTerm);
             }
             
             // For other name operations, use complete string comparison
-            int comparison = gameNameLower.compareTo(searchTerm);  // 修正比较顺序
-            
-            // Debug output
-            System.out.println(String.format("Comparing game '%s' with searchTerm '%s', result: %d, op: %s", 
-                gameNameLower, searchTerm, comparison, operation));
+            int comparison = gameNameLower.compareTo(searchTerm);
             
             switch (operation) {
                 case EQUALS:
@@ -183,12 +178,24 @@ public final class Filter {
             Comparable<Object> typedGameValue = (Comparable<Object>) gameValue;
             int comparison = typedGameValue.compareTo(filterValue);
             
-            if (operation == Operations.EQUALS) return comparison == 0;
-            if (operation == Operations.NOT_EQUALS) return comparison != 0;
-            if (operation == Operations.GREATER_THAN) return comparison > 0;
-            if (operation == Operations.LESS_THAN) return comparison < 0;
-            if (operation == Operations.GREATER_THAN_EQUALS) return comparison >= 0;
-            if (operation == Operations.LESS_THAN_EQUALS) return comparison <= 0;
+            if (operation == Operations.EQUALS) {
+                return comparison == 0;
+            }
+            if (operation == Operations.NOT_EQUALS) {
+                return comparison != 0;
+            }
+            if (operation == Operations.GREATER_THAN) {
+                return comparison > 0;
+            }
+            if (operation == Operations.LESS_THAN) {
+                return comparison < 0;
+            }
+            if (operation == Operations.GREATER_THAN_EQUALS) {
+                return comparison >= 0;
+            }
+            if (operation == Operations.LESS_THAN_EQUALS) {
+                return comparison <= 0;
+            }
         }
         return false;
     }
@@ -200,15 +207,33 @@ public final class Filter {
      * @return The comparable value from the game
      */
     private Comparable<?> getGameValue(BoardGame game) {
-        if (column == GameData.NAME) return game.getName();
-        if (column == GameData.YEAR) return game.getYearPublished();
-        if (column == GameData.MAX_TIME) return game.getMaxPlayTime();
-        if (column == GameData.MIN_TIME) return game.getMinPlayTime();
-        if (column == GameData.DIFFICULTY) return game.getDifficulty();
-        if (column == GameData.RANK) return game.getRank();
-        if (column == GameData.MAX_PLAYERS) return game.getMaxPlayers();
-        if (column == GameData.MIN_PLAYERS) return game.getMinPlayers();
-        if (column == GameData.RATING) return game.getRating();
+        if (column == GameData.NAME) {
+            return game.getName();
+        }
+        if (column == GameData.YEAR) {
+            return game.getYearPublished();
+        }
+        if (column == GameData.MAX_TIME) {
+            return game.getMaxPlayTime();
+        }
+        if (column == GameData.MIN_TIME) {
+            return game.getMinPlayTime();
+        }
+        if (column == GameData.DIFFICULTY) {
+            return game.getDifficulty();
+        }
+        if (column == GameData.RANK) {
+            return game.getRank();
+        }
+        if (column == GameData.MAX_PLAYERS) {
+            return game.getMaxPlayers();
+        }
+        if (column == GameData.MIN_PLAYERS) {
+            return game.getMinPlayers();
+        }
+        if (column == GameData.RATING) {
+            return game.getRating();
+        }
         return null;
     }
 
@@ -219,15 +244,21 @@ public final class Filter {
      */
     private Comparable<?> parseFilterValue() {
         try {
-            if (column == GameData.NAME) return value;
-            if (column == GameData.YEAR || column == GameData.RANK || 
-                column == GameData.MAX_PLAYERS || column == GameData.MIN_PLAYERS) {
+            if (column == GameData.NAME) {
+                return value;
+            }
+            if (column == GameData.YEAR 
+                || column == GameData.RANK 
+                || column == GameData.MAX_PLAYERS 
+                || column == GameData.MIN_PLAYERS) {
                 return Integer.parseInt(value);
             }
-            if (column == GameData.MAX_TIME || column == GameData.MIN_TIME) {
+            if (column == GameData.MAX_TIME 
+                || column == GameData.MIN_TIME) {
                 return Integer.parseInt(value);
             }
-            if (column == GameData.DIFFICULTY || column == GameData.RATING) {
+            if (column == GameData.DIFFICULTY 
+                || column == GameData.RATING) {
                 return Double.parseDouble(value);
             }
             return null;
