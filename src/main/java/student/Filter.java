@@ -87,8 +87,7 @@ public final class Filter {
         String value = condition.substring(opIndex + op.getOperator().length());
 
         // Preserve spaces for all name-related operations
-        if (columnName.equalsIgnoreCase("name")
-                && (op == Operations.CONTAINS || op == Operations.EQUALS || op == Operations.NOT_EQUALS)) {
+        if (columnName.equalsIgnoreCase("name")) {
             value = value.trim();
             //System.out.println("Name operation value after trim: '" + value + "'");
         } else {
@@ -128,7 +127,7 @@ public final class Filter {
             
             // Special handling for CONTAINS operation
             if (operation == Operations.CONTAINS) {
-                System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
+                //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
                 return gameNameLower.contains(searchTerm);
             }
             
