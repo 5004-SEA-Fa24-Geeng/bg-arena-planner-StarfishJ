@@ -90,28 +90,15 @@ public class Planner implements IPlanner {
 
         // Apply filters if there are any
         if (!filter.isEmpty()) {
-            //System.out.println("Processing filter: '" + filter + "'");
-            // for name~= or name==, keep the string
-            if (filter.toLowerCase().startsWith("name~=") || filter.toLowerCase().startsWith("name==")) {
-                // no split
-                Filter parsedFilter = Filter.parseCondition(filter);
-                //System.out.println("Created name filter: " + (parsedFilter != null));
+            // Split filter by comma for multiple conditions
+            String[] conditions = filter.split(",");
+            for (String condition : conditions) {
+                condition = condition.trim();
+                Filter parsedFilter = Filter.parseCondition(condition);
                 if (parsedFilter != null) {
                     filteredGames = filteredGames.stream()
                             .filter(parsedFilter::apply)
                             .collect(Collectors.toList());
-                    //System.out.println("After filtering, games count: " + filteredGames.size());
-                }
-            } else {
-                // 对其他情况使用逗号分隔
-                String[] conditions = filter.split(",");
-                for (String condition : conditions) {
-                    Filter parsedFilter = Filter.parseCondition(condition.trim());
-                    if (parsedFilter != null) {
-                        filteredGames = filteredGames.stream()
-                                .filter(parsedFilter::apply)
-                                .collect(Collectors.toList());
-                    }
                 }
             }
         }

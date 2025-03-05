@@ -95,8 +95,8 @@ public final class Filter {
                 value = value.substring(1).trim();
             }
             // Handle the case where the value might start with other operator characters
-            if (value.startsWith(">") || value.startsWith("<") || 
-                value.startsWith("~") || value.startsWith("!")) {
+            if (value.startsWith(">") || value.startsWith("<") 
+                || value.startsWith("~") || value.startsWith("!")) {
                 value = value.substring(1).trim();
             }
         } else {
