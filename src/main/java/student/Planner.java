@@ -91,8 +91,8 @@ public class Planner implements IPlanner {
         // Apply filters if there are any
         if (!filter.isEmpty()) {
             //System.out.println("Processing filter: '" + filter + "'");
-            // for name~=, keep the string
-            if (filter.toLowerCase().startsWith("name~=")) {
+            // for name~= or name==, keep the string
+            if (filter.toLowerCase().startsWith("name~=") || filter.toLowerCase().startsWith("name==")) {
                 // no split
                 Filter parsedFilter = Filter.parseCondition(filter);
                 //System.out.println("Created name filter: " + (parsedFilter != null));

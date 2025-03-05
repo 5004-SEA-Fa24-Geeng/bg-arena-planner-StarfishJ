@@ -80,12 +80,13 @@ public final class Filter {
         String columnName = condition.substring(0, opIndex).trim();
         String value = condition.substring(opIndex + op.getOperator().length());
         
-        // for name~= ，perform trim.
-        if (op == Operations.CONTAINS && columnName.equalsIgnoreCase("name")) {
+        // Preserve spaces for all name-related operations
+        if (columnName.equalsIgnoreCase("name") && 
+            (op == Operations.CONTAINS || op == Operations.EQUALS || op == Operations.NOT_EQUALS)) {
             value = value.trim();
-            //System.out.println("Name search term after trim: '" + value + "'");
+            //System.out.println("Name operation value after trim: '" + value + "'");
         } else {
-            // for other operations，remove all blank spaces.
+            // Remove all spaces for other operations
             value = value.replaceAll("\\s+", "");
         }
 
@@ -108,16 +109,30 @@ public final class Filter {
             return false;
         }
 
-        // Special handling for CONTAINS operation
-        if (operation == Operations.CONTAINS && column == GameData.NAME) {
+        // Special handling for name operations
+        if (column == GameData.NAME) {
             String gameName = game.getName();
             if (gameName == null) {
                 return false;
             }
+            
+            // All name comparisons should be case-insensitive
             String searchTerm = value.toLowerCase();
             String gameNameLower = gameName.toLowerCase();
-            //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
-            return gameNameLower.contains(searchTerm);
+            
+            // Special handling for CONTAINS operation
+            if (operation == Operations.CONTAINS) {
+                //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
+                return gameNameLower.contains(searchTerm);
+            }
+            
+            // For other name operations, use complete string comparison
+            int comparison = gameNameLower.compareTo(searchTerm);
+            return switch (operation) {
+                case EQUALS -> comparison == 0;
+                case NOT_EQUALS -> comparison != 0;
+                default -> false;
+            };
         }
 
         // Handle other operations
