@@ -4,7 +4,7 @@ package student;
  * The Filter class provides functionality for filtering board games based on various criteria.
  * It implements a flexible filtering system that allows users to filter games based on different
  * attributes such as name, player count, play time, difficulty, etc.
- *
+ * <p>
  * The class supports various comparison operations including:
  * - Greater than (>)
  * - Less than (<)
@@ -13,7 +13,7 @@ package student;
  * - Contains (~=)
  * - Greater than or equal to (>=)
  * - Less than or equal to (<=)
- *
+ * <p>
  * Example usage:
  * - Filter.parseCondition("minPlayers>2") - finds games that support more than 2 players
  * - Filter.parseCondition("name~=chess") - finds games with "chess" in their name
@@ -23,21 +23,27 @@ package student;
  * @version 1.0
  */
 public final class Filter {
-    
-    /** The game data column to filter on. */
+
+    /**
+     * The game data column to filter on.
+     */
     private final GameData column;
-    /** The operation to apply for filtering. */
+    /**
+     * The operation to apply for filtering.
+     */
     private final Operations operation;
-    /** The value to compare against. */
+    /**
+     * The value to compare against.
+     */
     private final String value;
 
     /**
      * Private constructor for Filter class.
      * Use {@link #parseCondition(String)} to create a new Filter instance.
      *
-     * @param column The game data column to filter on
+     * @param column    The game data column to filter on
      * @param operation The operation to apply
-     * @param value The value to compare against
+     * @param value     The value to compare against
      */
     private Filter(GameData column, Operations operation, String value) {
         this.column = column;
@@ -48,7 +54,7 @@ public final class Filter {
     /**
      * Parses a condition string and creates a new Filter instance.
      * The condition string should be in the format: "column operator value"
-     * 
+     *
      * @param condition The condition string to parse
      * @return A new Filter instance, or null if the condition is invalid
      */
@@ -65,8 +71,8 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex || 
-                    (index == opIndex && operator.length() > operation.getOperator().length())) {
+                if (opIndex == -1 || index < opIndex
+                        || (index == opIndex && operator.length() > operation.getOperator().length())) {
                     op = operation;
                     opIndex = index;
                 }
@@ -79,10 +85,10 @@ public final class Filter {
 
         String columnName = condition.substring(0, opIndex).trim();
         String value = condition.substring(opIndex + op.getOperator().length());
-        
+
         // Preserve spaces for all name-related operations
-        if (columnName.equalsIgnoreCase("name") && 
-            (op == Operations.CONTAINS || op == Operations.EQUALS || op == Operations.NOT_EQUALS)) {
+        if (columnName.equalsIgnoreCase("name")
+                && (op == Operations.CONTAINS || op == Operations.EQUALS || op == Operations.NOT_EQUALS)) {
             value = value.trim();
             //System.out.println("Name operation value after trim: '" + value + "'");
         } else {
@@ -100,7 +106,7 @@ public final class Filter {
 
     /**
      * Applies the filter to a board game.
-     * 
+     *
      * @param game The board game to check
      * @return true if the game matches the filter condition, false otherwise
      */
@@ -122,7 +128,7 @@ public final class Filter {
             
             // Special handling for CONTAINS operation
             if (operation == Operations.CONTAINS) {
-                //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
+                System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
                 return gameNameLower.contains(searchTerm);
             }
             
@@ -131,6 +137,10 @@ public final class Filter {
             return switch (operation) {
                 case EQUALS -> comparison == 0;
                 case NOT_EQUALS -> comparison != 0;
+                case GREATER_THAN -> comparison > 0;
+                case LESS_THAN -> comparison < 0;
+                case GREATER_THAN_EQUALS -> comparison >= 0;
+                case LESS_THAN_EQUALS -> comparison <= 0;
                 default -> false;
             };
         }
@@ -162,7 +172,7 @@ public final class Filter {
 
     /**
      * Gets the game value for comparison based on the column.
-     * 
+     *
      * @param game The board game to get the value from
      * @return The comparable value from the game
      */
@@ -183,7 +193,7 @@ public final class Filter {
 
     /**
      * Parses the filter value to a comparable type.
-     * 
+     *
      * @return The parsed filter value as a Comparable object
      */
     private Comparable<?> parseFilterValue() {
@@ -202,7 +212,7 @@ public final class Filter {
 
     /**
      * Gets the operation used in this filter.
-     * 
+     *
      * @return The operation
      */
     public Operations getOperation() {
@@ -211,7 +221,7 @@ public final class Filter {
 
     /**
      * Gets the column used in this filter.
-     * 
+     *
      * @return The column
      */
     public GameData getColumn() {
@@ -220,7 +230,7 @@ public final class Filter {
 
     /**
      * Gets the value used in this filter.
-     * 
+     *
      * @return The value as a string
      */
     public String getValue() {
