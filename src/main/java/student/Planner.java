@@ -90,13 +90,17 @@ public class Planner implements IPlanner {
 
         // Apply filters if there are any
         if (!filter.isEmpty()) {
-            String[] conditions = filter.split(",");
+            // Split by both comma and space
+            String[] conditions = filter.split("[,\\s]+");
             for (String condition : conditions) {
-                Filter parsedFilter = Filter.parseCondition(condition.trim());
-                if (parsedFilter != null) {
-                    filteredGames = filteredGames.stream()
-                            .filter(parsedFilter::apply)
-                            .collect(Collectors.toList());
+                condition = condition.trim();
+                if (!condition.isEmpty()) {
+                    Filter parsedFilter = Filter.parseCondition(condition);
+                    if (parsedFilter != null) {
+                        filteredGames = filteredGames.stream()
+                                .filter(parsedFilter::apply)
+                                .collect(Collectors.toList());
+                    }
                 }
             }
         }

@@ -56,4 +56,15 @@ class FilterTest {
         assertFalse(filter.apply(testGame));
     }
 
+    @Test
+    void testFilterByNameContains() {
+        Filter filter = Filter.parseCondition("name~=Test");
+        assertNotNull(filter);
+        assertTrue(filter.apply(testGame));
+
+        filter = Filter.parseCondition("name~=NotFound");
+        assertNotNull(filter);
+        assertFalse(filter.apply(testGame));
+    }
+
 }

@@ -59,9 +59,7 @@ public final class Filter {
             return null;
         }
 
-        condition = condition.replaceAll("\\s+", "");
-        //System.out.println("Parsing condition: " + condition);
-
+        // Find the operator first
         Operations op = null;
         int opIndex = -1;
 
@@ -69,23 +67,20 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex) {
+                if (opIndex == -1 || index < opIndex || 
+                    (index == opIndex && operator.length() > operation.getOperator().length())) {
                     op = operation;
                     opIndex = index;
                 }
             }
         }
 
-        if (op == null || opIndex == -1) {
+        if (op == null || opIndex <= 0) {
             return null;
         }
 
         String columnName = condition.substring(0, opIndex).trim();
-        String value = condition.substring(opIndex + getOperatorLenFromStr(condition)).trim();
-
-        //System.out.println(columnName);
-        //System.out.println(getOperatorFromStr(condition));
-        //System.out.println(value);
+        String value = condition.substring(opIndex + op.getOperator().length());
 
         GameData column = GameData.fromString(columnName);
         if (column == null) {
@@ -102,21 +97,33 @@ public final class Filter {
      * @return true if the game matches the filter condition, false otherwise
      */
     public boolean apply(BoardGame game) {
+        if (game == null) {
+            return false;
+        }
+
+        // Special handling for CONTAINS operation
+        if (operation == Operations.CONTAINS && column == GameData.NAME) {
+            String gameName = game.getName();
+            if (gameName == null) {
+                return false;
+            }
+            // Split search terms by spaces and check if all terms are contained
+            String[] searchTerms = value.trim().toLowerCase().split("\\s+");
+            String gameNameLower = gameName.toLowerCase();
+            for (String term : searchTerms) {
+                if (!gameNameLower.contains(term)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Handle other operations
         Comparable<?> gameValue = getGameValue(game);
         Comparable<?> filterValue = parseFilterValue();
 
         if (gameValue == null || filterValue == null) {
             return false;
-        }
-
-        // only use CONTAINS with NAME
-        if (operation == Operations.CONTAINS) {
-            if (column != GameData.NAME) {
-                return false;
-            }
-            String gameName = gameValue.toString();
-            String searchTerm = filterValue.toString();
-            return gameName.toLowerCase().contains(searchTerm.toLowerCase());
         }
 
         // for other operations, we need to ensure type matching
