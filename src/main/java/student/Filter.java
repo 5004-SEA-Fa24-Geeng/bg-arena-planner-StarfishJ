@@ -71,8 +71,8 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex
-                        || (index == opIndex && operator.length() > operation.getOperator().length())) {
+                if (opIndex == -1 || index < opIndex || 
+                    (index == opIndex && operator.length() > (op != null ? op.getOperator().length() : 0))) {
                     op = operation;
                     opIndex = index;
                 }
@@ -89,10 +89,23 @@ public final class Filter {
         // Preserve spaces for all name-related operations
         if (columnName.equalsIgnoreCase("name")) {
             value = value.trim();
-            //System.out.println("Name operation value after trim: '" + value + "'");
+            // Remove any leading operator characters that might have been included
+            if (value.startsWith("=")) {
+                value = value.substring(1).trim();
+            }
+            // Handle the case where the value might start with other operator characters
+            if (value.startsWith(">") || value.startsWith("<") || 
+                value.startsWith("~") || value.startsWith("!")) {
+                value = value.substring(1).trim();
+            }
+            System.out.println("Name operation value after processing: '" + value + "'");
         } else {
             // Remove all spaces for other operations
             value = value.replaceAll("\\s+", "");
+            // Handle numeric operations the same way
+            if (value.startsWith("=")) {
+                value = value.substring(1).trim();
+            }
         }
 
         GameData column = GameData.fromString(columnName);
@@ -132,16 +145,28 @@ public final class Filter {
             }
             
             // For other name operations, use complete string comparison
-            int comparison = gameNameLower.compareTo(searchTerm);
-            return switch (operation) {
-                case EQUALS -> comparison == 0;
-                case NOT_EQUALS -> comparison != 0;
-                case GREATER_THAN -> comparison > 0;
-                case LESS_THAN -> comparison < 0;
-                case GREATER_THAN_EQUALS -> comparison >= 0;
-                case LESS_THAN_EQUALS -> comparison <= 0;
-                default -> false;
-            };
+            int comparison = gameNameLower.compareTo(searchTerm);  // 修正比较顺序
+            
+            // Debug output
+            System.out.println(String.format("Comparing game '%s' with searchTerm '%s', result: %d, op: %s", 
+                gameNameLower, searchTerm, comparison, operation));
+            
+            switch (operation) {
+                case EQUALS:
+                    return comparison == 0;
+                case NOT_EQUALS:
+                    return comparison != 0;
+                case GREATER_THAN:
+                    return comparison > 0;
+                case LESS_THAN:
+                    return comparison < 0;
+                case GREATER_THAN_EQUALS:
+                    return comparison >= 0;
+                case LESS_THAN_EQUALS:
+                    return comparison <= 0;
+                default:
+                    return false;
+            }
         }
 
         // Handle other operations
@@ -156,15 +181,14 @@ public final class Filter {
         if (gameValue.getClass().isInstance(filterValue)) {
             @SuppressWarnings("unchecked")
             Comparable<Object> typedGameValue = (Comparable<Object>) gameValue;
-            return switch (operation) {
-                case GREATER_THAN -> typedGameValue.compareTo(filterValue) > 0;
-                case LESS_THAN -> typedGameValue.compareTo(filterValue) < 0;
-                case GREATER_THAN_EQUALS -> typedGameValue.compareTo(filterValue) >= 0;
-                case LESS_THAN_EQUALS -> typedGameValue.compareTo(filterValue) <= 0;
-                case EQUALS -> typedGameValue.compareTo(filterValue) == 0;
-                case NOT_EQUALS -> typedGameValue.compareTo(filterValue) != 0;
-                default -> false;
-            };
+            int comparison = typedGameValue.compareTo(filterValue);
+            
+            if (operation == Operations.EQUALS) return comparison == 0;
+            if (operation == Operations.NOT_EQUALS) return comparison != 0;
+            if (operation == Operations.GREATER_THAN) return comparison > 0;
+            if (operation == Operations.LESS_THAN) return comparison < 0;
+            if (operation == Operations.GREATER_THAN_EQUALS) return comparison >= 0;
+            if (operation == Operations.LESS_THAN_EQUALS) return comparison <= 0;
         }
         return false;
     }
@@ -176,18 +200,16 @@ public final class Filter {
      * @return The comparable value from the game
      */
     private Comparable<?> getGameValue(BoardGame game) {
-        return switch (column) {
-            case NAME -> game.getName();
-            case YEAR -> game.getYearPublished();
-            case MAX_TIME -> game.getMaxPlayTime();
-            case MIN_TIME -> game.getMinPlayTime();
-            case DIFFICULTY -> game.getDifficulty();
-            case RANK -> game.getRank();
-            case MAX_PLAYERS -> game.getMaxPlayers();
-            case MIN_PLAYERS -> game.getMinPlayers();
-            case RATING -> game.getRating();
-            default -> null;
-        };
+        if (column == GameData.NAME) return game.getName();
+        if (column == GameData.YEAR) return game.getYearPublished();
+        if (column == GameData.MAX_TIME) return game.getMaxPlayTime();
+        if (column == GameData.MIN_TIME) return game.getMinPlayTime();
+        if (column == GameData.DIFFICULTY) return game.getDifficulty();
+        if (column == GameData.RANK) return game.getRank();
+        if (column == GameData.MAX_PLAYERS) return game.getMaxPlayers();
+        if (column == GameData.MIN_PLAYERS) return game.getMinPlayers();
+        if (column == GameData.RATING) return game.getRating();
+        return null;
     }
 
     /**
@@ -197,13 +219,18 @@ public final class Filter {
      */
     private Comparable<?> parseFilterValue() {
         try {
-            return switch (column) {
-                case NAME -> value;
-                case YEAR, RANK, MAX_PLAYERS, MIN_PLAYERS -> Integer.parseInt(value);
-                case MAX_TIME, MIN_TIME -> Integer.parseInt(value);
-                case DIFFICULTY, RATING -> Double.parseDouble(value);
-                default -> null;
-            };
+            if (column == GameData.NAME) return value;
+            if (column == GameData.YEAR || column == GameData.RANK || 
+                column == GameData.MAX_PLAYERS || column == GameData.MIN_PLAYERS) {
+                return Integer.parseInt(value);
+            }
+            if (column == GameData.MAX_TIME || column == GameData.MIN_TIME) {
+                return Integer.parseInt(value);
+            }
+            if (column == GameData.DIFFICULTY || column == GameData.RATING) {
+                return Double.parseDouble(value);
+            }
+            return null;
         } catch (NumberFormatException e) {
             return null;
         }
