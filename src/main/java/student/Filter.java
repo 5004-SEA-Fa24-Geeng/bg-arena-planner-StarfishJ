@@ -65,8 +65,8 @@ public final class Filter {
             String operator = operation.getOperator();
             int index = condition.indexOf(operator);
             if (index > 0) {
-                if (opIndex == -1 || index < opIndex 
-                ||(index == opIndex && operator.length() > operation.getOperator().length())) {
+                if (opIndex == -1 || index < opIndex || 
+                    (index == opIndex && operator.length() > operation.getOperator().length())) {
                     op = operation;
                     opIndex = index;
                 }
@@ -79,6 +79,15 @@ public final class Filter {
 
         String columnName = condition.substring(0, opIndex).trim();
         String value = condition.substring(opIndex + op.getOperator().length());
+        
+        // for name~= ，perform trim.
+        if (op == Operations.CONTAINS && columnName.equalsIgnoreCase("name")) {
+            value = value.trim();
+            //System.out.println("Name search term after trim: '" + value + "'");
+        } else {
+            // for other operations，remove all blank spaces.
+            value = value.replaceAll("\\s+", "");
+        }
 
         GameData column = GameData.fromString(columnName);
         if (column == null) {
@@ -105,9 +114,9 @@ public final class Filter {
             if (gameName == null) {
                 return false;
             }
-            // For name search, treat the entire value as one search term
-            String searchTerm = value.trim().toLowerCase();
+            String searchTerm = value.toLowerCase();
             String gameNameLower = gameName.toLowerCase();
+            //System.out.println("Comparing game: '" + gameName + "' with search term: '" + searchTerm + "'");
             return gameNameLower.contains(searchTerm);
         }
 

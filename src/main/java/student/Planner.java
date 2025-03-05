@@ -85,17 +85,28 @@ public class Planner implements IPlanner {
      */
     @Override
     public Stream<BoardGame> filter(String filter, GameData sortOn, boolean ascending) {
-        // 每次过滤时都重新初始化过滤列表
+        // initialize filteredGames every time
         filteredGames = new ArrayList<>(allGames);
 
         // Apply filters if there are any
         if (!filter.isEmpty()) {
-            // Split by both comma and space
-            String[] conditions = filter.split("[,\\s]+");
-            for (String condition : conditions) {
-                condition = condition.trim();
-                if (!condition.isEmpty()) {
-                    Filter parsedFilter = Filter.parseCondition(condition);
+            //System.out.println("Processing filter: '" + filter + "'");
+            // for name~=, keep the string
+            if (filter.toLowerCase().startsWith("name~=")) {
+                // no split
+                Filter parsedFilter = Filter.parseCondition(filter);
+                //System.out.println("Created name filter: " + (parsedFilter != null));
+                if (parsedFilter != null) {
+                    filteredGames = filteredGames.stream()
+                            .filter(parsedFilter::apply)
+                            .collect(Collectors.toList());
+                    //System.out.println("After filtering, games count: " + filteredGames.size());
+                }
+            } else {
+                // 对其他情况使用逗号分隔
+                String[] conditions = filter.split(",");
+                for (String condition : conditions) {
+                    Filter parsedFilter = Filter.parseCondition(condition.trim());
                     if (parsedFilter != null) {
                         filteredGames = filteredGames.stream()
                                 .filter(parsedFilter::apply)

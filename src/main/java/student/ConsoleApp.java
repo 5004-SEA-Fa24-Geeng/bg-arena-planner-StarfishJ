@@ -128,7 +128,17 @@ public class ConsoleApp {
 
         if (current.hasNext()) {
             String filter = remainder();
-            filter = filter.replaceAll("\\s", ""); // remove spaces
+            // for name~= , keep spaces in between
+            if (filter.toLowerCase().trim().startsWith("name~=")) {
+                // only remove space after operation
+                String[] parts = filter.split("~=", 2);
+                if (parts.length == 2) {
+                    filter = parts[0].trim() + "~=" + parts[1].trim();
+                }
+            } else {
+                // remove all blank spaces for other operations
+                filter = filter.replaceAll("\\s", "");
+            }
             filter = filter.toLowerCase(); // make it lower case
             if (filter.equalsIgnoreCase(ConsoleText.CMD_QUESTION.toString())) {
                 printOutput("%s%n", ConsoleText.FILTER_HELP);
