@@ -13,26 +13,38 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Loads the games from the csv file into a set of BoardGame objects.
- * This file is stored in the resources folder, and while it is
- * passed in - often tends to be more fixed.
- * 
- * It assumes there are no comma's in the data (and does not handle errors if
- * there are extra commas like in the name).
- * 
+ * GamesLoader provides functionality for loading board games from CSV files.
+ * This utility class handles the parsing and conversion of CSV data into BoardGame objects.
+ *
+ * Key features:
+ * - CSV file parsing with comma delimiter
+ * - Header row processing for column mapping
+ * - Data validation and error handling
+ * - Conversion of string data to appropriate types
+ *
+ * The class assumes:
+ * - CSV files are properly formatted with no commas in data fields
+ * - First row contains headers matching GameData enum values
+ * - All required columns are present in the file
+ *
+ * @author Yuchen Huang
+ * @version 1.0
  */
 public final class GamesLoader {
-    /** Standard csv delim. */
+    /** Standard CSV delimiter character. */
     private static final String DELIMITER = ",";
 
-    /** private constructor to prevent instantiation. */
+    /** Private constructor to prevent instantiation of utility class. */
     private GamesLoader() {
     }
 
     /**
-     * Loads the games from the csv file into a set of BoardGame objects.
-     * @param filename the name of the file to load
-     * @return a set of BoardGame objects
+     * Loads board games from a CSV file into a set of BoardGame objects.
+     * The file should be located in the resources directory.
+     *
+     * @param filename the name of the file to load (relative to resources directory)
+     * @return a set of BoardGame objects created from the file data
+     * @throws RuntimeException if there is an error reading or parsing the file
      */
     public static Set<BoardGame> loadGamesFile(String filename) {
         Set<BoardGame> games = new HashSet<>();
@@ -85,11 +97,31 @@ public final class GamesLoader {
     }
 
     /**
-     * Converts a line from the csv file into a BoardGame object.
-     * 
-     * @param line      the line to convert
-     * @param columnMap the map of columns to index
-     * @return a BoardGame object
+     * Processes the header row of the CSV file to create a mapping of columns to their indices.
+     *
+     * @param headerLine the first line of the CSV file containing column headers
+     * @return a map linking GameData enum values to their corresponding column indices
+     */
+    private static Map<GameData, Integer> processHeader(String headerLine) {
+        Map<GameData, Integer> columnMap = new HashMap<>();
+        String[] columns = headerLine.split(DELIMITER);
+        for (int i = 0; i < columns.length; i++) {
+            try {
+                GameData col = GameData.fromColumnName(columns[i]);
+                columnMap.put(col, i);
+            } catch (IllegalArgumentException e) {
+                // System.out.println("Ignoring column: " + columns[i]);
+            }
+        }
+        return columnMap;
+    }
+
+    /**
+     * Converts a line of CSV data into a BoardGame object.
+     *
+     * @param line the CSV line to parse
+     * @param columnMap the mapping of GameData values to column indices
+     * @return a new BoardGame object, or null if the data is invalid
      */
     private static BoardGame toBoardGame(String line, Map<GameData, Integer> columnMap) {
         String[] columns = line.split(DELIMITER);
@@ -113,30 +145,6 @@ public final class GamesLoader {
             // skip if there is an issue
             return null;
         }
-    }
-
-    /**
-     * Processes the header line to determine the column mapping.
-     * 
-     * It is common to do this for csv files as the columns can be in any order.
-     * This makes it order independent by taking a moment to link the columns
-     * with their actual index in the file.
-     * 
-     * @param header the header line
-     * @return a map of column to index
-     */
-    private static Map<GameData, Integer> processHeader(String header) {
-        Map<GameData, Integer> columnMap = new HashMap<>();
-        String[] columns = header.split(DELIMITER);
-        for (int i = 0; i < columns.length; i++) {
-            try {
-                GameData col = GameData.fromColumnName(columns[i]);
-                columnMap.put(col, i);
-            } catch (IllegalArgumentException e) {
-                // System.out.println("Ignoring column: " + columns[i]);
-            }
-        }
-        return columnMap;
     }
 
 }

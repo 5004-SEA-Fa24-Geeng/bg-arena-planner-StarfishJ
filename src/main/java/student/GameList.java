@@ -55,7 +55,10 @@ public class GameList implements IGameList {
      */
     @Override
     public List<String> getGameNames() {
-        return List.copyOf(gameList.stream().map(BoardGame::getName).collect(Collectors.toList()));
+        return gameList.stream()
+                .map(BoardGame::getName)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -98,45 +101,58 @@ public class GameList implements IGameList {
      * @param filtered the stream of filtered board games
      */
     @Override
-    public void addToList(String str, Stream<BoardGame> filtered) {
-        List<BoardGame> filteredList = filtered.toList();
+    public void addToList(String str, Stream<BoardGame> filtered) throws IllegalArgumentException {
+        List<BoardGame> filteredList = filtered.collect(Collectors.toList());
+
+        if (str == null || str.trim().isEmpty()) {
+            throw new IllegalArgumentException("Input cannot be empty.");
+        }
 
         if (str.equalsIgnoreCase(ADD_ALL)) {
             gameList.addAll(filteredList);
             return;
         }
 
-        if (str.trim().isEmpty()) {
-            System.out.println("Input cannot be empty.");
-            return;
-        }
-
-        // Check if the input is a valid game name in the filtered list
+        // First try to match by name (case-insensitive)
+        String trimmedStr = str.trim();
         List<BoardGame> matchedByName = filteredList.stream()
-                .filter(game -> game.getName().equalsIgnoreCase(str))
-                .toList();
+                .filter(game -> game.getName().equalsIgnoreCase(trimmedStr))
+                .collect(Collectors.toList());
 
         if (!matchedByName.isEmpty()) {
             gameList.addAll(matchedByName);
             return;
         }
 
+        // If no name match, try to parse as number or range
         try {
-            if (str.contains("-")) { // Handle range
-                String[] parts = str.split("-");
-                int start = Integer.parseInt(parts[0]);
-                int end = Integer.parseInt(parts[1]);
-                if (start < 1 || end > filteredList.size() || start > end)
-                    throw new IllegalArgumentException("Invalid range. " +
-                            "Please enter numbers between 1 and " + filteredList.size());
+            if (trimmedStr.contains("-")) {
+                String[] parts = trimmedStr.split("-");
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException("Invalid range format: " + trimmedStr);
+                }
+                int start = Integer.parseInt(parts[0].trim());
+                int end = Integer.parseInt(parts[1].trim());
+                
+                if (start < 1 || end > filteredList.size() || start > end) {
+                    throw new IllegalArgumentException(
+                        String.format("Invalid range: %d-%d. Valid range is 1-%d", 
+                            start, end, filteredList.size()));
+                }
+                
                 gameList.addAll(filteredList.subList(start - 1, end));
-            } else { // Single entry
-                int index = Integer.parseInt(str) - 1;
-                if (index < 0 || index >= filteredList.size()) throw new IllegalArgumentException();
+            } else {
+                int index = Integer.parseInt(trimmedStr) - 1;
+                if (index < 0 || index >= filteredList.size()) {
+                    throw new IllegalArgumentException(
+                        String.format("Invalid index: %d. Valid range is 1-%d", 
+                            index + 1, filteredList.size()));
+                }
                 gameList.add(filteredList.get(index));
             }
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Invalid input format: " + str);
+            throw new IllegalArgumentException(
+                String.format("'%s' is not a valid game name or number", trimmedStr));
         }
     }
 

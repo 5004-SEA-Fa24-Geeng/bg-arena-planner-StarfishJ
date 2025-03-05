@@ -17,9 +17,9 @@ import static student.Operations.getOperatorLenFromStr;
  * - Less than or equal to (<=)
  *
  * Example usage:
- * Filter.parseCondition("minPlayers>2") - finds games that support more than 2 players
- * Filter.parseCondition("name~=chess") - finds games with "chess" in their name
- * Filter.parseCondition("rating>=8.0") - finds games rated 8.0 or higher
+ * - Filter.parseCondition("minPlayers>2") - finds games that support more than 2 players
+ * - Filter.parseCondition("name~=chess") - finds games with "chess" in their name
+ * - Filter.parseCondition("rating>=8.0") - finds games rated 8.0 or higher
  *
  * @author Yuchen Huang
  * @version 1.0
@@ -30,12 +30,27 @@ public final class Filter {
     private final Operations operation;
     private final String value;
 
+    /**
+     * Private constructor for Filter class.
+     * Use {@link #parseCondition(String)} to create a new Filter instance.
+     *
+     * @param column The game data column to filter on
+     * @param operation The operation to apply
+     * @param value The value to compare against
+     */
     private Filter(GameData column, Operations operation, String value) {
         this.column = column;
         this.operation = operation;
         this.value = value;
     }
 
+    /**
+     * Parses a condition string and creates a new Filter instance.
+     * The condition string should be in the format: "column operator value"
+     * 
+     * @param condition The condition string to parse
+     * @return A new Filter instance, or null if the condition is invalid
+     */
     public static Filter parseCondition(String condition) {
         if (condition == null || condition.trim().isEmpty()) {
             return null;
@@ -77,6 +92,12 @@ public final class Filter {
         return new Filter(column, op, value);
     }
 
+    /**
+     * Applies the filter to a board game.
+     * 
+     * @param game The board game to check
+     * @return true if the game matches the filter condition, false otherwise
+     */
     public boolean apply(BoardGame game) {
         Comparable<?> gameValue = getGameValue(game);
         Comparable<?> filterValue = parseFilterValue();
@@ -103,6 +124,12 @@ public final class Filter {
         return false;
     }
 
+    /**
+     * Gets the game value for comparison based on the column.
+     * 
+     * @param game The board game to get the value from
+     * @return The comparable value from the game
+     */
     private Comparable<?> getGameValue(BoardGame game) {
         return switch (column) {
             case NAME -> game.getName();
@@ -118,16 +145,49 @@ public final class Filter {
         };
     }
 
+    /**
+     * Parses the filter value to a comparable type.
+     * 
+     * @return The parsed filter value as a Comparable object
+     */
     private Comparable<?> parseFilterValue() {
         try {
             return switch (column) {
                 case NAME -> value;
-                case YEAR, MAX_TIME, MIN_TIME, MAX_PLAYERS, MIN_PLAYERS, RANK -> Integer.parseInt(value);
+                case YEAR, RANK, MAX_PLAYERS, MIN_PLAYERS -> Integer.parseInt(value);
+                case MAX_TIME, MIN_TIME -> Integer.parseInt(value);
                 case DIFFICULTY, RATING -> Double.parseDouble(value);
                 default -> null;
             };
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * Gets the operation used in this filter.
+     * 
+     * @return The operation
+     */
+    public Operations getOperation() {
+        return operation;
+    }
+
+    /**
+     * Gets the column used in this filter.
+     * 
+     * @return The column
+     */
+    public GameData getColumn() {
+        return column;
+    }
+
+    /**
+     * Gets the value used in this filter.
+     * 
+     * @return The value as a string
+     */
+    public String getValue() {
+        return value;
     }
 }

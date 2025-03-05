@@ -32,13 +32,16 @@ import java.util.stream.Stream;
  * @version 1.0
  */
 public class Planner implements IPlanner {
-    // List of all board games
+    /** List of all board games in the collection */
     private Set<BoardGame> allGames;
-    // List of filtered board games
+    
+    /** List of currently filtered board games */
     private List<BoardGame> filteredGames;
 
     /**
      * Constructor for Planner.
+     * Initializes the planner with a set of board games.
+     *
      * @param games the set of board games to manage
      */
     public Planner(Set<BoardGame> games) {
@@ -47,7 +50,9 @@ public class Planner implements IPlanner {
     }
 
     /**
-     * filters the list of board games based on the provided filter string.
+     * Filters the list of board games based on the provided filter string.
+     * Uses default sorting by name in ascending order.
+     *
      * @param filter the filter string to apply
      * @return a stream of filtered board games
      */
@@ -57,7 +62,9 @@ public class Planner implements IPlanner {
     }
 
     /**
-     * filters the list of board games based on the provided filter string and sort criteria.
+     * Filters the list of board games based on the provided filter string and sort criteria.
+     * Uses default ascending order for sorting.
+     *
      * @param filter the filter string to apply
      * @param sortOn the GameData field to sort on
      * @return a stream of filtered and sorted board games
@@ -68,7 +75,9 @@ public class Planner implements IPlanner {
     }
 
     /**
-     * filters the list of board games based on the provided filter string, sort criteria, and order.
+     * Filters the list of board games based on the provided filter string, sort criteria, and order.
+     * This is the main filtering method that implements the full filtering and sorting functionality.
+     *
      * @param filter the filter string to apply
      * @param sortOn the GameData field to sort on
      * @param ascending whether to sort in ascending order
@@ -104,6 +113,7 @@ public class Planner implements IPlanner {
 
     /**
      * Resets the filtered list of board games to the original list.
+     * This clears any previously applied filters.
      */
     @Override
     public void reset() {
@@ -111,7 +121,11 @@ public class Planner implements IPlanner {
     }
 
     /**
-     * Creates a comparator for sorting based on the specified GameData field
+     * Creates a comparator for sorting based on the specified GameData field.
+     * Provides type-safe comparison for different game attributes.
+     *
+     * @param sortOn the GameData field to create a comparator for
+     * @return a comparator for sorting board games
      */
     private Comparator<BoardGame> createComparator(GameData sortOn) {
         return switch (sortOn) {
@@ -126,7 +140,7 @@ public class Planner implements IPlanner {
             case RATING -> Comparator.comparingDouble(BoardGame::getRating);
             default ->
                 // Default to sorting by name if unknown field
-                    Comparator.comparing(BoardGame::getName, String.CASE_INSENSITIVE_ORDER);
+                Comparator.comparing(BoardGame::getName, String.CASE_INSENSITIVE_ORDER);
         };
     }
 }

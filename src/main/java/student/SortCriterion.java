@@ -10,6 +10,17 @@ import java.util.function.Function;
  * The class supports sorting by any GameData attribute and handles both ascending and
  * descending order. It uses Java's Comparator interface to provide type-safe comparisons.
  *
+ * Key features:
+ * - Type-safe comparisons for all game attributes
+ * - Support for both ascending and descending order
+ * - Null-safe comparison handling
+ * - Case-insensitive string comparisons for game names
+ *
+ * Example usage:
+ * - Sort by name: new SortCriterion(GameData.NAME, true)
+ * - Sort by rating descending: new SortCriterion(GameData.RATING, false)
+ * - Sort by year: new SortCriterion(GameData.YEAR, true)
+ *
  * @author Yuchen Huang
  * @version 1.0
  */
@@ -19,8 +30,10 @@ public class SortCriterion {
 
     /**
      * Constructor for SortCriterion.
-     * @param field The field to sort by
-     * @param ascending Whether to sort in ascending order
+     * Creates a new sorting criterion with the specified field and order.
+     *
+     * @param field The GameData field to sort by
+     * @param ascending Whether to sort in ascending order (true) or descending order (false)
      */
     public SortCriterion(GameData field, boolean ascending) {
         this.field = field;
@@ -29,6 +42,8 @@ public class SortCriterion {
 
     /**
      * Creates a comparator for the specified sort criterion.
+     * The comparator handles type-safe comparison of board game attributes.
+     *
      * @return A type-safe comparator for BoardGame objects
      */
     public Comparator<BoardGame> createComparator() {
@@ -44,6 +59,8 @@ public class SortCriterion {
 
     /**
      * Gets the value to compare for a given board game.
+     * Extracts the appropriate value based on the sort field.
+     *
      * @param game The board game to get the value from
      * @return A comparable value based on the sort field
      */

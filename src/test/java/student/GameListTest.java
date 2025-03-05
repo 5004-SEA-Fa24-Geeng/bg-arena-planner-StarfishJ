@@ -2,13 +2,18 @@ package student;
 
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+/**
+ * Test class for GameList implementation.
+ */
 public class GameListTest {
 
     Set<BoardGame> games;
@@ -92,5 +97,26 @@ public class GameListTest {
         list.addToList("3", games.stream());
         list.removeFromList("3");
         assertEquals(2, list.count());
+    }
+
+    @Test
+    void testAddByName() {
+        IGameList list = new GameList();
+        list.addToList("Go Fish", games.stream());
+        assertEquals(List.of("Go Fish"), list.getGameNames());
+    }
+
+    @Test
+    void testAddByNameCaseInsensitive() {
+        IGameList list = new GameList();
+        list.addToList("go fish", games.stream());
+        assertEquals(List.of("Go Fish"), list.getGameNames());
+    }
+
+    @Test
+    void testAddByNameWithSpaces() {
+        IGameList list = new GameList();
+        list.addToList("  Go Fish  ", games.stream());
+        assertEquals(List.of("Go Fish"), list.getGameNames());
     }
 }
