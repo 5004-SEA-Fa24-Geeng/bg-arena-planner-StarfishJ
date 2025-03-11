@@ -142,4 +142,19 @@ public class GameListTest {
         list.addToList("1", games.stream());
         assertEquals(1, list.count());
     }
+
+    @Test
+    void testSaveGame() {
+        IGameList list = new GameList();
+        list.addToList("all", games.stream());
+        list.saveGame("temp/games.txt");
+        
+        // Verify file exists
+        java.io.File file = new java.io.File("temp/games.txt");
+        assertTrue(file.exists(), "File should exist after saving");
+        
+        // Clean up
+        file.delete();
+        file.getParentFile().delete();
+    }
 }

@@ -85,11 +85,20 @@ public class GameList implements IGameList {
      */
     @Override
     public void saveGame(String filename) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            List<String> sortedNames = getGameNames();
-            for (String gameName : sortedNames) {
-                writer.write(gameName);
-                writer.newLine();
+        try {
+            // Create parent directories if they don't exist
+            java.io.File file = new java.io.File(filename);
+            java.io.File parent = file.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
+                List<String> sortedNames = getGameNames();
+                for (String gameName : sortedNames) {
+                    writer.write(gameName);
+                    writer.newLine();
+                }
             }
         } catch (IOException e) {
             System.err.println("Error saving game list: " + e.getMessage());
