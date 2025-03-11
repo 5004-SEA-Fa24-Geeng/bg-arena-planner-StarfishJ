@@ -1,15 +1,14 @@
 package student;
 
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Test class for GameList implementation.
@@ -17,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class GameListTest {
 
     Set<BoardGame> games;
-
-
-    @TempDir
-    static Path tempDir = Path.of("temp");
 
     @BeforeEach
     public void setup() {
@@ -32,7 +27,6 @@ public class GameListTest {
         games.add(new BoardGame("golang", 4, 2, 7, 25, 45, 2.0, 250, 7.0, 2018));
         games.add(new BoardGame("GoRami", 3, 6, 6, 40, 80, 2.5, 180, 7.3, 2015));
         games.add(new BoardGame("Monopoly", 8, 6, 10, 60, 180, 2.5, 10, 7.5, 1935));
-
     }
 
     @Test
@@ -54,6 +48,13 @@ public class GameListTest {
     @Test
     void getGameNames() {
         IGameList list = new GameList();
+        list.addToList("all", games.stream());
+        List<String> names = list.getGameNames();
+        System.out.println("Game names: " + names);
+        assertEquals(games.size(), names.size());
+        for (BoardGame game : games) {
+            assertTrue(names.contains(game.getName()));
+        }
     }
 
     @Test
@@ -73,13 +74,6 @@ public class GameListTest {
         assertEquals(3, list.count());
         list.clear();
         assertEquals(0, list.count());
-    }
-
-    @Test
-    void saveGame() {
-        IGameList list = new GameList();
-        list.addToList("1", games.stream());
-        list.addToList("2", games.stream());
     }
 
     @Test
@@ -118,5 +112,34 @@ public class GameListTest {
         IGameList list = new GameList();
         list.addToList("  Go Fish  ", games.stream());
         assertEquals(List.of("Go Fish"), list.getGameNames());
+    }
+
+    @Test
+    void testAddAllGames() {
+        IGameList list = new GameList();
+        list.addToList("all", games.stream());
+        assertEquals(games.size(), list.count());
+    }
+
+    @Test
+    void testInvalidIndex() {
+        IGameList list = new GameList();
+        assertThrows(IllegalArgumentException.class, () -> 
+            list.addToList("999", games.stream()));
+    }
+
+    @Test
+    void testInvalidRange() {
+        IGameList list = new GameList();
+        assertThrows(IllegalArgumentException.class, () -> 
+            list.addToList("3-1", games.stream()));
+    }
+
+    @Test
+    void testDuplicateAdd() {
+        IGameList list = new GameList();
+        list.addToList("1", games.stream());
+        list.addToList("1", games.stream());
+        assertEquals(1, list.count());
     }
 }

@@ -86,13 +86,14 @@ public class GameList implements IGameList {
     @Override
     public void saveGame(String filename) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
-            for (String gameName : getGameNames()) {
+            List<String> sortedNames = getGameNames();
+            for (String gameName : sortedNames) {
                 writer.write(gameName);
                 writer.newLine();
             }
-            System.out.println("Game list saved to " + filename);
         } catch (IOException e) {
             System.err.println("Error saving game list: " + e.getMessage());
+            throw new RuntimeException("Failed to save game list: " + e.getMessage());
         }
     }
 
@@ -132,16 +133,17 @@ public class GameList implements IGameList {
                 if (parts.length != 2) {
                     throw new IllegalArgumentException("Invalid range format: " + trimmedStr);
                 }
-                int start = Integer.parseInt(parts[0].trim());
+                int start = Integer.parseInt(parts[0].trim()) - 1;
                 int end = Integer.parseInt(parts[1].trim());
                 
-                if (start < 1 || end > filteredList.size() || start > end) {
+                if (start < 0 || end > filteredList.size() || start >= end) {
                     throw new IllegalArgumentException(
                         String.format("Invalid range: %d-%d. Valid range is 1-%d", 
-                            start, end, filteredList.size()));
+                            start + 1, end, filteredList.size()));
                 }
                 
-                gameList.addAll(filteredList.subList(start - 1, end));
+                List<BoardGame> subList = filteredList.subList(start, end);
+                gameList.addAll(new ArrayList<>(subList));
             } else {
                 int index = Integer.parseInt(trimmedStr) - 1;
                 if (index < 0 || index >= filteredList.size()) {

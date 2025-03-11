@@ -8,6 +8,7 @@ import java.util.Set;
 import student.Planner;
 import student.IPlanner;
 import student.GameData;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**
@@ -40,5 +41,73 @@ public class TestPlanner {
         assertEquals("Go", filtered.get(0).getName());
     }
     
+    @Test
+    public void testChainedFilters() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> filtered = planner.filter("minPlayers>=2,maxPlayers<=6").toList();
+        assertTrue(filtered.stream().allMatch(game -> 
+            game.getMinPlayers() >= 2 && game.getMaxPlayers() <= 6));
+    }
 
+    @Test
+    public void testSortingByRating() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> sorted = planner.filter("", GameData.RATING, false).toList();
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            assertTrue(sorted.get(i).getRating() >= sorted.get(i + 1).getRating());
+        }
+    }
+
+    @Test
+    public void testSortingByName() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> sorted = planner.filter("", GameData.NAME, true).toList();
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            assertTrue(sorted.get(i).getName().compareToIgnoreCase(
+                sorted.get(i + 1).getName()) <= 0);
+        }
+    }
+
+    @Test
+    public void testComplexFilter() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> filtered = planner.filter(
+            "minPlayers>=2,maxPlayers<=10,rating>=7.0").toList();
+        assertTrue(filtered.stream().allMatch(game -> 
+            game.getMinPlayers() >= 2 && 
+            game.getMaxPlayers() <= 10 && 
+            game.getRating() >= 7.0));
+    }
+
+    @Test
+    public void testEmptyFilter() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> all = planner.filter("").toList();
+        assertEquals(games.size(), all.size());
+    }
+
+    @Test
+    public void testResetFilter() {
+        IPlanner planner = new Planner(games);
+        planner.filter("minPlayers>5").toList();
+        planner.reset();
+        List<BoardGame> all = planner.filter("").toList();
+        assertEquals(games.size(), all.size());
+    }
+
+    @Test
+    public void testNameContainsFilter() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> filtered = planner.filter("name~=Go").toList();
+        assertTrue(filtered.stream().allMatch(game -> 
+            game.getName().toLowerCase().contains("go")));
+    }
+
+    @Test
+    public void testMultipleNameFilters() {
+        IPlanner planner = new Planner(games);
+        List<BoardGame> filtered = planner.filter("name>=go,name<=go").toList();
+        assertEquals(1, filtered.size());
+        assertEquals("Go", filtered.get(0).getName());
+    }
 }
